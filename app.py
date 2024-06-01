@@ -186,3 +186,12 @@ async def get_attr(request: Request, attractionId: Optional[int] = None):
 async def get_mrts(request: Request):
   data = get_db_mrts()
   return JSONResponse(status_code=200,content={"data": data})
+
+@app.get("/api/test_db_connection", response_class=JSONResponse)
+async def test_db_connection():
+    try:
+        con = get_connection()
+        con.close()
+        return JSONResponse(status_code=200, content={"success": True})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
