@@ -101,7 +101,7 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
         return JSONResponse(status_code=404, content={"data": None})
     else:
-        return JSONResponse(status_code=exc.status_code, content={"error": "True400"})
+        return JSONResponse(status_code=exc.status_code, content={"error": True})
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -119,16 +119,13 @@ class CustomHTTPException(HTTPException):
         super().__init__(status_code, detail, headers)
 
     def __str__(self):
-        # Convert the detail dictionary to a JSON string
         return json.dumps(self.detail)
       
 @app.exception_handler(CustomHTTPException)
 async def custom_http_exception_handler(request: Request, exc: CustomHTTPException):
-    # Directly return a JSONResponse with the desired structure
-    # No need to parse exc.detail with json.loads() since it's already a string
     return JSONResponse(
         status_code=exc.status_code,
-        content=exc.detail  # Use exc.detail directly
+        content=exc.detail
     )
 
 # Static Pages (Never Modify Code in this Block)
@@ -154,44 +151,35 @@ async def get_attractions(
 ):
     attractions = get_db_attrs_with_imgs()
 
-    # Debugging: Print the keyword
-    if keyword:
-        print(f"Received keyword: {keyword}")
-
     # Filter by keyword in attraction name if provided
     if keyword:
         keyword_utf8 = keyword.encode('utf-8').decode('utf-8')  # Ensure keyword is treated as UTF-8 string
-        filtered_attractions = [attr for attr in attractions if keyword_utf8 in attr["name"] or keyword_utf8 == attr.get["mrt"]]
+        filtered_attractions = [attr for attr in attractions if keyword_utf8 in attr["name"] or keyword_utf8 == attr.get("mrt")]
     else:
         filtered_attractions = attractions
-
-    # Debugging: Print the filtered attractions
-    print(f"Filtered attractions: {filtered_attractions}")
 
     # Pagination logic
     start = page * size
     end = start + size
     paginated_attractions = filtered_attractions[start:end]
 
-    return JSONResponse(status_code=200, content=paginated_attractions)
+    # Calculate nextPage
+    total_pages = len(filtered_attractions) // size + (len(filtered_attractions) % size > 0)
+    next_page = page + 1 if page+1 < total_pages else None
+
+    # Return the modified response structure
+    return JSONResponse(status_code=200, content={
+        "nextPage": next_page,
+        "data": paginated_attractions
+    })
   
 @app.get("/api/attraction/{attractionId}", response_class=JSONResponse)
 async def get_attr(request: Request, attractionId: Optional[int] = None):
   if attractionId:
     data = get_db_attr_with_imgs(attractionId)
-    print (data)
-    return JSONResponse(status_code=200,content=data)
+    return JSONResponse(status_code=200,content={"data":data})
   
 @app.get("/api/mrts", response_class = JSONResponse)
 async def get_mrts(request: Request):
   data = get_db_mrts()
   return JSONResponse(status_code=200,content={"data": data})
-
-@app.get("/api/test_db_connection", response_class=JSONResponse)
-async def test_db_connection():
-    try:
-        con = get_connection()
-        con.close()
-        return JSONResponse(status_code=200, content={"success": True})
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})

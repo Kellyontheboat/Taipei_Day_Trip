@@ -138,7 +138,6 @@ def main():
     
     # Get and print attractions from the database
     attractions = get_attractions()
-    print(json.dumps({"nextPage": 1, "data": attractions}, indent=4, ensure_ascii=False))
 
 if __name__ == "__main__":
     main()
