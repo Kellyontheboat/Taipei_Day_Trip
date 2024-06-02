@@ -183,3 +183,7 @@ async def get_attr(request: Request, attractionId: Optional[int] = None):
 async def get_mrts(request: Request):
   data = get_db_mrts()
   return JSONResponse(status_code=200,content={"data": data})
+
+
+
+
