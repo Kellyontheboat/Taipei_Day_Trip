@@ -47,26 +47,13 @@ def execute_query(query: str, params: Tuple = (), commit: bool = False) -> List[
     con.close()
     return result
 
-def get_db_attrs_with_imgs() -> List[dict]:
-    attractions_query = "SELECT * FROM attractions"
-    images_query = "SELECT url FROM images WHERE attraction_id = %s"
-    
-    attractions = execute_query(attractions_query)
-    
-    for attraction in attractions:
-        attraction_id = attraction["id"]
-        image_records = execute_query(images_query, (attraction_id,))
-        attraction["images"] = [record["url"] for record in image_records]
-       
-    return attractions
-
 def get_db_attr_with_imgs(attractionId):
     query = "SELECT * FROM attractions WHERE id = %s"
     images_query = "SELECT url FROM images WHERE attraction_id = %s"
-    
+
     # First, attempt to fetch the attraction
     attraction_result = execute_query(query, (attractionId,))
-    
+
     # Check if the result is not empty
     if attraction_result:
         # If the attraction exists, proceed to fetch its images
@@ -74,10 +61,39 @@ def get_db_attr_with_imgs(attractionId):
         image_records = execute_query(images_query, (attraction["id"],))
         if image_records:  # Check if there are any image records
             attraction["images"] = [record["url"] for record in image_records]
-        
+
         return attraction
     else:
         raise CustomHTTPException(status_code=400, detail={"error": True,"message": "景點編號不正確"})
+
+def get_db_attrs_with_imgs(page: int, size: int, keyword: Optional[str] = None) -> List[dict]:
+    offset = page * size
+    base_query = "SELECT * FROM attractions"
+    images_query = "SELECT url FROM images WHERE attraction_id = %s"
+    
+    params = []
+    query_conditions = []
+
+    # Adjusted to use exact match for 'mrt' if keyword is provided
+    if keyword:
+        query_conditions.append("name LIKE %s OR mrt = %s")
+        params.extend([f"%{keyword}%", keyword])
+        
+    if query_conditions:
+        base_query += " WHERE " + " AND ".join(query_conditions)
+        
+    attractions_query = f"{base_query} LIMIT %s OFFSET %s"
+    params.extend([size, offset])  # Correctly appending size and offset
+    
+    attractions = execute_query(attractions_query, tuple(params))
+    
+    for attraction in attractions:
+        attraction_id = attraction["id"]
+        image_records = execute_query(images_query, (attraction_id,))
+        attraction["images"] = [record["url"] for record in image_records]
+    
+    return attractions
+
 
 def get_db_mrts() -> List[str]:
     query = """
@@ -149,28 +165,16 @@ async def get_attractions(
     size: int = Query(12, ge=1),
     keyword: Optional[str] = Query(None)
 ):
-    attractions = get_db_attrs_with_imgs()
+    attractions = get_db_attrs_with_imgs(page, size, keyword)
 
-    # Filter by keyword in attraction name if provided
-    if keyword:
-        keyword_utf8 = keyword.encode('utf-8').decode('utf-8')  # Ensure keyword is treated as UTF-8 string
-        filtered_attractions = [attr for attr in attractions if keyword_utf8 in attr["name"] or keyword_utf8 == attr.get("mrt")]
-    else:
-        filtered_attractions = attractions
-
-    # Pagination logic
-    start = page * size
-    end = start + size
-    paginated_attractions = filtered_attractions[start:end]
-
-    # Calculate nextPage
-    total_pages = len(filtered_attractions) // size + (len(filtered_attractions) % size > 0)
-    next_page = page + 1 if page+1 < total_pages else None
+    # Calculate nextPage based on the remaining attractions
+    remaining_attractions = get_db_attrs_with_imgs(page + 1, size, keyword)
+    next_page = page + 1 if len(remaining_attractions) > 0 else None
 
     # Return the modified response structure
     return JSONResponse(status_code=200, content={
         "nextPage": next_page,
-        "data": paginated_attractions
+        "data": attractions
     })
   
 @app.get("/api/attraction/{attractionId}", response_class=JSONResponse)
