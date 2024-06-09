@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const loadingSentinel = document.getElementById("loading-sentinel");
   const scrollContainer = document.getElementById('scroll-container');
   const mrtInput = document.getElementById('mrt-input');
+  const searchButton = document.getElementById('search-button');
+
 
   let currentPage = 0;
   let loading = false;
@@ -79,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
       loading = false;
     } else {
       window.removeEventListener('scroll', handleScroll);
+      //appendFooter(); // Add footer when all pages are loaded
     }
   }
 
@@ -90,6 +93,25 @@ document.addEventListener("DOMContentLoaded", function () {
       loadMoreAttractions();
     }
   }
+
+  // function appendFooter() {
+  //   const footer = document.createElement('div');
+  //   footer.classList.add('footer');
+  //   const footerContent = document.createElement('div')
+  //   footerContent.classList.add('footer-text');
+  //   footerContent.innerText = 'COPYRIGHT © 2021 台北一日遊';
+  //   gridContainerImg.appendChild(footer);
+  //   footer.appendChild(footerContent);
+  // }
+
+  searchButton.addEventListener('click', function () {
+    keyword = mrtInput.value;
+    currentPage = 0; // Reset to the first page
+    gridContainerImg.innerHTML = ''; // Clear previous results
+    loading = false; // Reset loading flag
+    window.addEventListener('scroll', handleScroll); // Reattach scroll event listener
+    loadMoreAttractions(); // Load attractions based on the search keyword
+  });
 
   loadMoreAttractions();
   window.addEventListener('scroll', handleScroll);
