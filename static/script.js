@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
       url += `&keyword=${encodeURIComponent(keyword)}`;
     }
 
+    // ??應統一使用exception handler
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -64,6 +65,26 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     gridContainerImg.appendChild(loadingSentinel);
+
+    // Update the grid rows based on the number of items
+    updateGridRows();
+  }
+
+  function updateGridRows() {
+    const numItems = document.querySelectorAll('.grid-item-img').length;
+    const numColumns = 4;
+    const numRows = Math.ceil(numItems / numColumns);
+
+    // Determine the row height based on screen width
+    let rowHeight;
+    if (window.matchMedia("(max-width: 600px)").matches) {
+      rowHeight = 235 + 45; // Height for screens less than 600px wide
+    } else {
+      rowHeight = 197 + 45; // Default height
+    }
+
+    // Set the grid-template-rows with a fixed height
+    gridContainerImg.style.gridTemplateRows = `repeat(${numRows}, ${rowHeight}px)`;
   }
 
   async function loadMoreAttractions() {
@@ -93,16 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
       loadMoreAttractions();
     }
   }
-
-  // function appendFooter() {
-  //   const footer = document.createElement('div');
-  //   footer.classList.add('footer');
-  //   const footerContent = document.createElement('div')
-  //   footerContent.classList.add('footer-text');
-  //   footerContent.innerText = 'COPYRIGHT © 2021 台北一日遊';
-  //   gridContainerImg.appendChild(footer);
-  //   footer.appendChild(footerContent);
-  // }
 
   searchButton.addEventListener('click', function () {
     keyword = mrtInput.value;
