@@ -1,0 +1,344 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-y: scroll;
+  font-size: 20px;
+  font-family: 'Noto Sans TC', '微軟正黑體', sans-serif;
+  justify-content: center;
+  align-items: center;
+  color: #666666;
+}
+
+.navbar-container {
+  display: flex;
+    /* Ensure navbar-container is a flex container */
+    justify-content: center;
+    /* Centers children horizontally */
+    align-items: center;
+    /* Centers children vertically */
+    width: 100%;
+    /* Take full width of the body */
+}
+
+/* navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 54px;
+  width: 1200px;
+}
+
+.navbar
+.nav-title {
+  font-weight: 700;
+  color: #448899;
+  font-size: 30px;
+}
+
+.nav-item-container
+.nav-item {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.nav-item-container {
+
+  display: flex;
+  align-items: center;
+}
+
+.navbarWelcome {
+  display: flex;
+  /* Change to flex to enable flex properties */
+  justify-content: center;
+  /* Center children horizontally */
+  align-items: center;
+  /* Center children vertically */
+  background-image: url('pics/welcome.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-align: left;
+  margin-bottom: 40px;
+  height: 320px;
+}
+
+.welcome-content-container {
+  display: flex;
+  /* Enable flex properties for the container */
+  flex-direction: column;
+  /* Stack children vertically */
+  justify-content: center;
+  text-align: left;
+  width: 1200px;
+  /* Fixed width */
+  max-width: 100%;
+  /* Ensure it doesn't exceed the navbarWelcome width */
+}
+
+.navbarWelcome .t1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #F8F8F8;
+}
+
+.navbarWelcome .t2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #F8F8F8;
+}
+
+.t1, .t2 {
+  margin-bottom: 20px;
+}
+
+.content {
+  width: 1200px;
+  margin: 0 auto;
+  /* position: relative; */
+}
+
+.scroll-container-wrapper {
+  display: flex;
+    align-items: center;
+    /* Vertically center the buttons and scroll container */
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.scroll-container {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.station {
+  display: inline-block;
+  padding: 5px 15px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.scroll-button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  height: 100%;
+  /* Adjust height to match the stations */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  /* Prevent buttons from shrinking */
+  padding: 3.5px 10px;
+  /* Add padding to give space around the button text */
+  border-radius: 50%;
+    /* Make the button circular */
+}
+
+.scroll-button.left {
+  margin-right: 10px;
+  /* Add margin to separate from stations */
+  font-size: 24px;
+  color: #828181;
+}
+
+.scroll-button.right {
+  margin-left: 10px;
+  font-size: 24px;
+  color:#828181;
+}
+
+/* bigBox */
+.grid-container-img {
+  /* display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(15, calc(((1100px / 3) + 20px) * 0.5));
+    grid-gap: 20px;
+    width: 1200px;
+    margin-top: 20px;
+    padding: 20px 4px; */
+    display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(15, calc(197px + 45px));
+      /* Add 45px to the height */
+      grid-gap: 20px;
+      width: 1200px;
+      margin-top: 20px;
+      padding: 20px 4px;
+}
+
+.grid-item-img {
+  position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    background-color: white;
+      border-radius: 5px;
+      overflow: hidden;
+      box-sizing: border-box;
+  /* background-size: contain;
+  background-position: center;
+  position: relative; */
+}
+
+.image-div {
+  width: 100%;
+    padding-top: calc(242px - 45px);
+    /* Maintain aspect ratio minus the space for .spanOfImg */
+    background-size: cover;
+    background-position: center;
+    border-radius: 5px 5px 0px 0px;
+    box-sizing: border-box;
+}
+
+.title {
+  position: absolute;
+    bottom:35px;
+    /* Ensure it is above the span */
+    width: 100%;
+    background-color: rgba(250, 249, 249, 0.4);
+    color: #000000;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 10px 0;
+      border-radius: 0 0 5px 5px;
+      box-sizing: border-box;
+  /* position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: rgba(250, 249, 249, 0.4);
+  color: #000000;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 10px 0px; */
+}
+
+.spanOfImg {
+  display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    /* padding: 10px 0; */
+    height: 45px;
+    /* Ensure it takes the designated height */
+    position: absolute;
+    bottom: 0;
+    /* Position at the bottom of the grid item */
+    background-color: white;
+    /* Optional: Add a background color */
+    border: 1px solid #ddd;
+    border-radius: 0 0 5px 5px;
+    box-sizing: border-box;
+}
+
+.mrtstat, .cat {
+  font-size: 16px;
+  padding: 5px;
+
+}
+
+#loading-sentinel {
+  width: 100%;
+  height: 20px;
+}
+
+.footer {
+  background-color: #757575;
+    display: flex;
+    /* Ensure this is set to display flex */
+    justify-content: center;
+    /* Centers children horizontally */
+    align-items: center;
+    /* Centers children vertically */
+    text-align: center;
+    height: 104px;
+    /* Defined height */
+}
+
+.footer-text {
+  color:#ddd;
+}
+
+
+/* ! max 1200px */
+@media (max-width: 1200px) {
+  .navbar {
+      width: 90%;
+    }
+  
+  .welcome-content-container {
+    width: 90%;
+  }
+  
+  .content {
+      width: 90%;
+      margin: 0 auto;
+      justify-content: center;
+      /* position: relative;  */
+    }
+
+  .grid-container-img {
+    display: grid;
+      /* grid-template-columns: repeat(4, 1fr);
+      grid-gap: 20px;
+      width: 100%;
+      margin: 0 auto;*/
+      padding-top: 40px; 
+      display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        width: 100%;
+        margin: 0;
+  }
+
+  .grid-item-img {
+    flex-grow: 1;
+      width: calc((100% - 20px * 3) / 4);
+      height: 150px;
+  }
+
+  .scroll-container-wrapper {
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
+/* ! max 600px */
+@media (max-width: 600px) {
+  .welcome-content-container {
+      width: 90%;
+    }
+
+  .grid-container-img {
+    display: flex;
+    flex-direction: column;
+    grid-gap: 20px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .grid-item-img {
+    flex-grow: 1;
+    width: 100%;
+    height: 150px;
+  }
+
+  .scroll-container-wrapper {
+    width: 100%;
+    margin: 0 auto;
+  }
+}

@@ -21,24 +21,24 @@ async def booking(request: Request):
 async def thankyou(request: Request):
     return FileResponse("./static/thankyou.html", media_type="text/html")
 
-@router.get("/api/attractions", response_class=JSONResponse)
+@router.get("/api/attractions")
 async def get_attractions(
     request: Request, 
     page: int = Query(..., ge=0), 
     size: int = Query(12, ge=1),
     keyword: Optional[str] = Query(None)
 ):
-    try:
-        attractions = get_db_attrs_with_imgs(page, size, keyword)
-        remaining_attractions = get_db_attrs_with_imgs(page + 1, size, keyword)
-        next_page = page + 1 if len(remaining_attractions) > 0 else None
-        return JSONResponse(status_code=200, content={
-            "nextPage": next_page,
-            "data": attractions
-        })
-    except Exception as e:
-        print(f"Error in get_attractions: {str(e)}")
-        raise
+    attractions = get_db_attrs_with_imgs(page, size, keyword)
+
+    # Calculate nextPage based on the remaining attractions
+    remaining_attractions = get_db_attrs_with_imgs(page + 1, size, keyword)
+    next_page = page + 1 if len(remaining_attractions) > 0 else None
+
+    # Return the modified response structure
+    return JSONResponse(status_code=200, content={
+        "nextPage": next_page,
+        "data": attractions
+    })
 
 @router.get("/api/attraction/{attractionId}", response_class=JSONResponse)
 async def get_attr(request: Request, attractionId: Optional[int] = None):
