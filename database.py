@@ -33,7 +33,6 @@ def execute_query(query: str, params: tuple = (), commit: bool = False) -> list:
         result = None
         if not commit:
             result = cursor.fetchall()
-            print(f"Query result: {result}")
         else:
             con.commit()
 
