@@ -284,6 +284,7 @@ hr.under-nav {
 }
 
 .attr-wrap {
+  font-size: 16px;
   display: flex;
   justify-content: center;
   margin-top: 40px;
