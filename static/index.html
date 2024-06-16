@@ -1,11 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Index</title>
+  <title>Home - Attractions</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://kit.fontawesome.com/a595ab4e10.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
   
+
+  <!-- ! TOP Nav -->
+  <div class="navbar-container">
+    <div class="navbar">
+      <span class="nav-title">台北一日遊</span>
+      <span class="nav-item-container">
+        <span class="nav-item" style="margin-right: 20px;">預定行程</span>
+        <span class="nav-item">登入/註冊</span>
+      </span>
+    </div>
+  </div>
+  <!-- ! Welcome Nav -->
+  <div class="navbarWelcome">
+    <div class="welcome-content-container">
+      <div class="t1">輕鬆享受台北一日悠閒</div>
+      <div class="t2">探索每個角落，體驗城市的深度旅遊行程</div>
+    
+      <div class="wrap">
+        <div class="search">
+          <input type="text" id="mrt-input" class="searchTerm" placeholder="輸入景點名稱查詢">
+          <button type="submit" class="searchButton" id="search-button">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    
+    <!-- ! MRT -->
+    <div class="scroll-container-wrapper">
+      <button class="scroll-button left">&lt;</button>
+      <div class="scroll-container" id="scroll-container"></div>
+      <button class="scroll-button right">&gt;</button>
+    </div>
+    
+    <!-- ! attrs img -->
+    <div id="scroll-container">
+      <div class="attractions-container">
+        <div class="grid-container-img"><!-- js --></div>
+
+        <!-- ! Sentinel element -->
+        <div id="loading-sentinel"></div>
+      </div>
+    </div>
+    <script type="module" src="/static/js/main.js"></script>
+  </div>
+      <!-- ! Footer -->
+      <div class="before-footer"></div>
+      <div class="footer">
+        <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>
+      </div>
+
+   
+    
 </body>
+
 </html>
