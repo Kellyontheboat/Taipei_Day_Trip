@@ -150,3 +150,67 @@ function setActiveSlide(index) {
   indicators[index].classList.add('active');
   document.querySelector(`label[for="carousel-${index}"]`).classList.add('active');
 }
+
+
+//! function modal
+
+  let modal = document.getElementById("loginModal");
+  let btn = document.getElementById("login-register-btn");
+
+  btn.onclick = function () {
+    showLoginModal();
+  }
+
+//! modal
+
+const loginModal = document.getElementById('loginModal');
+const registerModal = document.getElementById('registerModal');
+const loginBtn = document.getElementById('login-modal-btn');
+const registerBtn = document.getElementById('register-modal-btn');
+
+// Function to show login modal and hide register modal
+export async function showLoginModal() {
+  loginModal.style.display = 'block';
+  registerModal.style.display = 'none';
+  registerBtn.addEventListener('click', function () {
+    showRegisterModal();    
+  });
+  closeButtons();
+
+}
+
+// Function to show register modal and hide login modal
+export async function showRegisterModal() {
+  registerModal.style.display = 'block';
+  loginModal.style.display = 'none';
+  loginBtn.addEventListener('click', function () {
+    showLoginModal();
+
+  });
+  closeButtons();
+
+}
+
+// Close modal when clicking on the close button
+async function closeButtons(){
+  const closeButtons = document.querySelectorAll('.close');
+  closeButtons.forEach(btn => {
+    btn.addEventListener('click', function (event) {
+      console.log(event.target)
+      loginModal.style.display = 'none';
+      registerModal.style.display = 'none';
+    });
+  });
+}
+
+export async function updateLoginButton() {
+  const loginButton = document.getElementById('login-register-btn');
+  if (loginButton) {
+    loginButton.innerText = '登出系統';
+    loginButton.id = 'logout-btn';
+  }
+  const logoutBtn = document.getElementById('logout-btn')
+  logoutBtn.addEventListener('click',()=> {
+    localStorage.removeItem('token');
+  })
+}
