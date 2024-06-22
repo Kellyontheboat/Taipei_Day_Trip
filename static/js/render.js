@@ -74,7 +74,7 @@ export function initStationElements(data, mrtInput, loadMoreAttractions, scrollC
 
 //!render attraction
 export function renderAttr(attraction) {
-  document.getElementById('name').textContent = attraction.name;
+  document.getElementById('attr-name').textContent = attraction.name;
   document.getElementById('category-mrt').textContent = `${attraction.category} at ${attraction.mrt}`;
   document.getElementById('description').textContent = attraction.description;
   document.getElementById('address').textContent = attraction.address;
@@ -153,7 +153,7 @@ function setActiveSlide(index) {
 
 
 //! function modal
-
+// ??????需要修改 登出時候會閃現Modal
   let modal = document.getElementById("loginModal");
   let btn = document.getElementById("login-register-btn");
 
@@ -167,9 +167,19 @@ const loginModal = document.getElementById('loginModal');
 const registerModal = document.getElementById('registerModal');
 const loginBtn = document.getElementById('login-modal-btn');
 const registerBtn = document.getElementById('register-modal-btn');
-
+const signInForm = document.getElementById('loginModal');
 // Function to show login modal and hide register modal
 export async function showLoginModal() {
+  const registeredEmail = localStorage.getItem('registeredEmail');
+
+  // Pre-fill the email input if the user just registered
+  if (registeredEmail) {
+    const emailInput = signInForm.querySelector('input[name="email"]');
+    emailInput.value = registeredEmail;
+
+    // Clear the registered email from local storage after pre-filling
+    localStorage.removeItem('registeredEmail');
+  }
   loginModal.style.display = 'block';
   registerModal.style.display = 'none';
   registerBtn.addEventListener('click', function () {
@@ -212,5 +222,6 @@ export async function updateLoginButton() {
   const logoutBtn = document.getElementById('logout-btn')
   logoutBtn.addEventListener('click',()=> {
     localStorage.removeItem('token');
+    location.reload();
   })
 }

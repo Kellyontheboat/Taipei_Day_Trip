@@ -1,19 +1,23 @@
-import { fetchAttractions, fetchMrtStations, fetchAttr, validateForm, registerformSubmission, loginformSubmission, checkLoginStatus } from './api.js';
+import { fetchAttractions, fetchMrtStations, fetchAttr, registerformSubmission, loginformSubmission, checkLoginStatus } from './api.js';
 import { renderAttractions, initStationElements, renderAttr, updateLoginButton } from './render.js'; 
 import { createScrollHandler } from './scroll.js';
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   // check user sign -in status
-  checkLoginStatus();
-
+  const status = await checkLoginStatus();
+  if(status) {
+    updateLoginButton();
+  }
+  
   const pathArray = window.location.pathname.split('/');
   const pageType = pathArray[1]; // Determine the endpoint('attraction', '')
 
   registerformSubmission();
   loginformSubmission();
-    //  if (pathArray[2] === 'user'){
+  // if (pathArray[1] === 'user'){
+    
+  // }
 
-    //  }
   if (pageType === 'attraction') {
     // If the path is /attraction/{id}
     const attractionId = pathArray[pathArray.length - 1];

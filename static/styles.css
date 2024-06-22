@@ -59,21 +59,43 @@ body {
   overflow: auto;
   background-color: rgb(0, 0, 0);
   background-color: rgba(0, 0, 0, 0.4);
+  z-index: 20;
 }
 
 .modal-content {
   background-color: #fefefe;
   margin: 15% auto;
-  padding: 20px;
+  margin-top: 80px;
+  padding: 0;
   border: 1px solid #888;
-  width: 80%;
+  width: 340px;
+  height: 275px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.modal-decorate {
+  width: 100%;
+  height: 10px;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 10px;
+  background: linear-gradient(270deg, #337788 0%, #66AABB 100%);
+  color: white;
+  box-sizing: border-box;
+  position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .close {
   color: #aaa;
   float: right;
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 30px;
+  font-weight: 200;
 }
 
 .close:hover,
@@ -81,6 +103,41 @@ body {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+.close:hover {
+  cursor: pointer;
+}
+
+.modal h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #666666;
+  margin: 20px 0 10px 0;
+  text-align: center;
+}
+
+.form-group {
+  width: 100%;
+  margin-bottom: 10px;
+  /* Add spacing between form groups */
+}
+
+.modal input,
+.modal button {
+  width: 310px;
+  height: 47px;
+  box-sizing: border-box;
+}
+
+.modal input {
+  border-color:rgb(188, 187, 187);
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.modal button{
+  font-size: 19px;
 }
 
 /* ! navbarWelcome */

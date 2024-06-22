@@ -1,7 +1,15 @@
+from fastapi import Depends, HTTPException, Security
+from fastapi.security import OAuth2PasswordBearer
+from starlette.status import HTTP_401_UNAUTHORIZED
+from typing import Optional
 
-from pydantic import BaseModel
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+from pydantic import BaseModel, EmailStr, Field
 from passlib.context import CryptContext
 import jwt
+from jose import JWTError
+
 import time
 from database import execute_query
 
@@ -9,16 +17,18 @@ SECRET_KEY = "super_secret_key"
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class Member(BaseModel):
+    id: int
+    username: str
     email: str
-    password: str
 
 class Token(BaseModel):
     token: str
 
+# when register new member be more strict on validating the input value
 class UserRegister(BaseModel):
-    name: str
-    email: str
-    password: str
+    name: str = Field(..., min_length=1)
+    email: EmailStr
+    password: str = Field(..., min_length=1)
     
 class UserLogin(BaseModel):
     email: str
@@ -44,27 +54,47 @@ def create_access_token(data: dict, expires_delta: int = 3600):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm="HS256")
     return encoded_jwt
 
-# Decode JWT token
-def decode_access_token(token: str):
+# Decode JWT token get id.email
+def decode_access_token(token: str) -> Optional[dict]:
     try:
-        decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-        return decoded_jwt
-    except jwt.PyJWTError:
+        payload = jwt.decode(token, SECRET_KEY, algorithms="HS256")
+        return payload
+    except JWTError:
         return None
-
-# Get current member from the token
-def get_current_member(token: str):
+    
+def get_current_member(token: str = Depends(oauth2_scheme)):
     decoded_token = decode_access_token(token)
     if not decoded_token:
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    email = decoded_token.get("email")
+    if not email:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
     query = "SELECT id, username, email FROM members WHERE email = %s"
-    member = execute_query(query, (decoded_token["email"],))
-    return member[0] if member else None
+    member = execute_query(query, (email,))
+    if not member:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Member not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    return member[0]
 
-def check_if_member_exist(login_user: UserLogin):
-        existing_user = execute_query("SELECT * FROM members WHERE email = %s", (login_user.email,))
-        print (bool(existing_user))
-        return bool(existing_user)
+def check_if_member_exist(user: UserRegister) -> bool:
+    query = "SELECT id, email, username FROM members WHERE email = %s"
+    member = execute_query(query, (user.email,))
+    print(member)
+    return member is not None
 
 def hash_pass_save_into_db(login_user: UserLogin):
     hashed_password = pwd_context.hash(login_user.password)

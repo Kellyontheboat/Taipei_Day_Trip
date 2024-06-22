@@ -1,5 +1,6 @@
 from fastapi import APIRouter,FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
+from exceptions import CustomHTTPException
 from models.members import Member, Token, UserRegister, UserLogin, authenticate_member, create_access_token, get_current_member, check_if_member_exist, hash_pass_save_into_db
 from starlette.status import HTTP_401_UNAUTHORIZED
 
@@ -23,7 +24,7 @@ def login_put(user: UserLogin):
     return {"token": token}
 
 @router.get("/api/user/auth", response_model=Member)
-def get_member_data(current_member: Member = Depends(get_current_member)):
+async def get_member_data(current_member: Member = Depends(get_current_member)):
     if not current_member:
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED,
@@ -32,22 +33,18 @@ def get_member_data(current_member: Member = Depends(get_current_member)):
         )
     return current_member
 
-
 @router.post("/api/user")
 def register_user(user: UserRegister):
     try:
         if check_if_member_exist(user):
-            print (check_if_member_exist(user))
-            raise HTTPException(status_code=400, detail="Email already registered")
+            raise CustomHTTPException(status_code=400, detail="Email已經註冊帳戶")
         hash_pass_save_into_db(user)
         return {"ok": True}
     except HTTPException as e:
-        raise e
+        raise e  # Re-raise HTTPException to ensure proper response handling
     except Exception as e:
         print(f"Unexpected error: {str(e)}")
         raise HTTPException(status_code=500, detail="伺服器內部錯誤")
-
-        
     
 @router.get("/api/protected")
 def read_protected_route(current_member: Member = Depends(get_current_member)):

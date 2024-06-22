@@ -44,34 +44,12 @@ export async function fetchAttr(id) {
   }
 }
 
-//! login
-export async function validateForm() {
-  const signInForm = document.getElementById('signin-form-login');
-  if (signInForm) {
-    signInForm.addEventListener('submit', async function (event) {
-      event.preventDefault(); // Prevent default form submission
-
-      try {
-
-        const token = await validateForm();
-        if (token) {
-          localStorage.setItem('token', token);
-          window.location.href = '/'; // Redirect to homepage
-        } else {
-          alert('Login failed. Please check your credentials.');
-        }
-      } catch (error) {
-        console.error('Error logging in:', error);
-        alert('An error occurred while logging in.');
-      }
-    });
-  }
-}
-
 // ! Form submission
 // Handle registration form submission
 export async function registerformSubmission() {
   const registerForm = document.getElementById('signin-form-register');
+  const registerMessage = document.getElementById('register-msg');
+
   registerForm.addEventListener('submit', async function (event) {
     event.preventDefault();
 
@@ -81,6 +59,21 @@ export async function registerformSubmission() {
       email: formData.get('email'),
       password: formData.get('password')
     };
+
+    // Check if all fields are filled
+    if (!data.name || !data.email || !data.password) {
+      registerMessage.innerText = '請輸入所有欄位';
+      registerMessage.style.color = 'red';
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      registerMessage.innerText = '請輸入正確信箱格式';
+      registerMessage.style.color = 'red';
+      return;
+    }
 
     try {
       const response = await fetch('/api/user', {
@@ -92,12 +85,21 @@ export async function registerformSubmission() {
       });
 
       if (response.ok) {
-        showLoginModal();
-        const loginSuccessMessage = document.getElementById('login-success-message');
-        loginSuccessMessage.style.display = 'block';
+        registerMessage.innerText = '註冊成功，請登入系統';
+        registerMessage.style.color = 'green';
+        // Store the registered email in localstorage
+        localStorage.setItem('registeredEmail', data.email)
       } else {
         const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
+        // if (errorData.detail === "Email已經註冊帳戶") {
+        //   registerMessage.innerText = 'Email已經註冊帳戶';
+        //   registerMessage.style.color = 'red';
+        if (errorData.message) {
+          registerMessage.innerText = errorData.message;
+          registerMessage.style.color = 'red';
+        } else {
+          alert(`Error: ${errorData.detail}`);
+        }
       }
     } catch (error) {
       console.error('Error:', error);
@@ -107,43 +109,69 @@ export async function registerformSubmission() {
 };
 
 export async function loginformSubmission(){
-  // Handle login form submission
-  const loginForm = document.getElementById('signin-form-login');
-  loginForm.addEventListener('submit', async function (event) {
-    event.preventDefault();
+  const signInForm = document.getElementById('signin-form-login');
+  const msgSpan = document.getElementById('login-msg');
 
-    const formData = new FormData(loginForm);
-    const data = {
-      email: formData.get('email'),
-      password: formData.get('password')
-    };
+  if (signInForm) {
+    signInForm.addEventListener('submit', async function (event) {
+      event.preventDefault(); // Prevent default form submission
 
-    try {
-      const response = await fetch('/api/user/auth', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
+      const formData = new FormData(signInForm);
+      const data = {
+        email: formData.get('email'),
+        password: formData.get('password')
+      };
 
-      if (response.ok) {
-        const responseData = await response.json();
-        localStorage.setItem('token', responseData.token);
-        window.location.href = '/';
-      } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
+      try {
+        const response = await fetch('/api/user/auth', {
+          method: 'PUT', // Correct method should be PUT for login
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          const responseData = await response.json();
+          localStorage.setItem('token', responseData.token);
+          location.reload(); 
+        } else {
+          const errorData = await response.json();
+          msgSpan.innerText = '電子郵件或密碼錯誤';
+          msgSpan.style.color = 'red';
+        }
+      } catch (error) {
+        console.error('Error logging in:', error);
+        msgSpan.innerText = '發生錯誤，請稍後再試';
+        msgSpan.style.color = 'red';
       }
-    } catch (error) {
-      alert('An error occurred while logging in. Please try again.');
-    }
-  });
+    });
+  }
 };
 
-export function checkLoginStatus() {
+export async function checkLoginStatus() {
   const token = localStorage.getItem('token');
   if (token) {
-    updateLoginButton();
+    try {
+      const response = await fetch('/api/user/auth', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        console.error('Response status:', response.status, response.statusText);
+        throw new Error('Network response was not ok');
+      }
+
+      const userData = await response.json();
+      return true;
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      return false;
+    }
   }
+  return false;
 }
