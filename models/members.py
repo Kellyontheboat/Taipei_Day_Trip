@@ -8,7 +8,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 from pydantic import BaseModel, EmailStr, Field
 from passlib.context import CryptContext
 import jwt
-from jose import JWTError
+from jwt.exceptions import DecodeError, ExpiredSignatureError
 
 import time
 from database import execute_query
@@ -57,9 +57,14 @@ def create_access_token(data: dict, expires_delta: int = 3600):
 # Decode JWT token get id.email
 def decode_access_token(token: str) -> Optional[dict]:
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms="HS256")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         return payload
-    except JWTError:
+    except DecodeError:
+        return None
+    except ExpiredSignatureError:
+        return None
+    except Exception as e:
+        print(f"Error decoding token: {e}")
         return None
     
 def get_current_member(token: str = Depends(oauth2_scheme)):
