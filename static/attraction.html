@@ -20,10 +20,10 @@
         <div id="loginModal" class="modal">
           <div class="modal-content">
             <div class="modal-decorate"></div>
-            <h2>
-              登入會員帳號
+            <div class="modal-title-container">
+              <h2>登入會員帳號</h2>
               <span class="close">&times;</span>
-            </h2>
+            </div>
             <form action="/api/user/auth" method="put" id="signin-form-login" novalidate>
               <div class="form-group">
                 <input type="email" id="email" name="email" placeholder="輸入電子信箱" required>
@@ -35,18 +35,20 @@
                 <button type="submit">登入帳戶</button>
               </div>
             </form>
-            <span class="login-modal-item" id="register-modal-btn">還沒有帳戶？點此註冊</span><br>
             <span id="login-msg" class="login-modal-item"></span>
+            <span class="login-modal-item" id="register-modal-btn">還沒有帳戶？點此註冊</span>
+            
           </div>
         </div>
         
         <!-- ! modal register -->
         <div id="registerModal" class="modal">
           <div class="modal-content">
-            <h2>
-              註冊會員帳號
+            <div class="modal-decorate"></div>
+            <div class="modal-title-container">
+              <h2>註冊會員帳號</h2>
               <span class="close">&times;</span>
-            </h2>
+            </div>
             <form id="signin-form-register" novalidate>
               <div class="form-group">
                 <input type="text" id="name" name="name" placeholder="輸入姓名" required>
@@ -61,8 +63,9 @@
                 <button type="submit">註冊新帳戶</button>
               </div>
             </form>
-            <span class="register-modal-item" id="login-modal-btn">已經有帳戶了？點此登入</span><br>
             <span id="register-msg"></span>
+            <span class="register-modal-item" id="login-modal-btn">已經有帳戶了？點此登入</span>
+            
           </div>
         </div>
 

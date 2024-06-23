@@ -1,7 +1,7 @@
-from fastapi import Depends, HTTPException, Security
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from starlette.status import HTTP_401_UNAUTHORIZED
 from typing import Optional
+from exceptions import CustomHTTPException
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -65,16 +65,16 @@ def decode_access_token(token: str) -> Optional[dict]:
 def get_current_member(token: str = Depends(oauth2_scheme)):
     decoded_token = decode_access_token(token)
     if not decoded_token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+        raise CustomHTTPException(
+            status_code=401,
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
     email = decoded_token.get("email")
-    if not email:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+    if not email:        
+        raise CustomHTTPException(
+            status_code=401,
             detail="Invalid token payload",
             headers={"WWW-Authenticate": "Bearer"},
         )
@@ -82,19 +82,18 @@ def get_current_member(token: str = Depends(oauth2_scheme)):
     query = "SELECT id, username, email FROM members WHERE email = %s"
     member = execute_query(query, (email,))
     if not member:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+        raise CustomHTTPException(
+            status_code=401,
             detail="Member not found",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
     return member[0]
 
 def check_if_member_exist(user: UserRegister) -> bool:
     query = "SELECT id, email, username FROM members WHERE email = %s"
     member = execute_query(query, (user.email,))
     print(member)
-    return member is not None
+    return len(member) > 0
 
 def hash_pass_save_into_db(login_user: UserLogin):
     hashed_password = pwd_context.hash(login_user.password)

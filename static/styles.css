@@ -36,7 +36,6 @@ body {
   text-decoration: none;
 }
 
-
 .nav-item-container .nav-item {
   font-weight: 500;
   font-size: 16px;
@@ -67,15 +66,27 @@ body {
   margin: 15% auto;
   margin-top: 80px;
   padding: 0;
-  border: 1px solid #888;
   width: 340px;
-  height: 275px;
   border-radius: 6px;
   display: flex;
   flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
-    position: relative;
+  align-items: center;
+  box-sizing: border-box;
+  position: relative;
+}
+
+#loginModal .modal-content {
+  min-height: 275px;
+  max-height: 80vh;
+  /* Limit the maximum height to 80% of viewport height */
+  overflow-y: auto;
+  /* Enable vertical scrolling if content exceeds max-height */
+}
+
+#registerModal .modal-content {
+  min-height: 275px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .modal-decorate {
@@ -87,15 +98,34 @@ body {
   color: white;
   box-sizing: border-box;
   position: absolute;
-    top: 0;
-    left: 0;
+  top: 0;
+  left: 0;
 }
+
+.modal-title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  /* Needed for absolute positioning of the close icon */
+  width: 95%;
+
+}
+
 
 .close {
   color: #aaa;
   float: right;
   font-size: 30px;
   font-weight: 200;
+  margin-left: 30px;
+  position: absolute;
+  right: 10px;
+  /* Adjust distance from the right edge */
+  top: 50%;
+  /* Center vertically */
+  transform: translateY(-50%);
+  /* Fine-tune vertical centering */
 }
 
 .close:hover,
@@ -105,7 +135,12 @@ body {
   cursor: pointer;
 }
 
-.close:hover {
+#login-modal-btn:hover,
+#register-modal-btn:hover,
+#login-register-btn,
+#logout-btn,
+.close:hover,
+button {
   cursor: pointer;
 }
 
@@ -131,12 +166,17 @@ body {
 }
 
 .modal input {
-  border-color:rgb(188, 187, 187);
+  border: 0.5px solid rgb(216, 216, 214);
   border-radius: 5px;
   font-size: 16px;
+  padding-left: 10px;
 }
 
-.modal button{
+.modal input:focus {
+  border-color: #3f4040;
+}
+
+.modal button {
   font-size: 19px;
 }
 
@@ -452,8 +492,8 @@ form.order-schedule .form-title {
 .form-item-title {
   font-weight: 700;
   cursor: pointer;
-    margin-right: 5px;
-    vertical-align: middle;
+  margin-right: 5px;
+  vertical-align: middle;
 }
 
 input[type='date'] {

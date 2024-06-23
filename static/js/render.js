@@ -152,53 +152,54 @@ function setActiveSlide(index) {
 }
 
 
-//! function modal
-// ??????需要修改 登出時候會閃現Modal
-  let modal = document.getElementById("loginModal");
+//! modal
+
+//!set showLoginModal
   let btn = document.getElementById("login-register-btn");
 
   btn.onclick = function () {
     showLoginModal();
   }
 
-//! modal
-
+// LoginModal
 const loginModal = document.getElementById('loginModal');
 const registerModal = document.getElementById('registerModal');
 const loginBtn = document.getElementById('login-modal-btn');
 const registerBtn = document.getElementById('register-modal-btn');
-const signInForm = document.getElementById('loginModal');
-// Function to show login modal and hide register modal
+const signInForm = document.getElementById('signin-form-login');
+const passwordInput = document.getElementById('password')
+const msgSpanLogin = document.getElementById('login-msg');
+const msgSpanRegister = document.getElementById('register-msg');
+
+//show login modal hide register modal
 export async function showLoginModal() {
   const registeredEmail = localStorage.getItem('registeredEmail');
-
   // Pre-fill the email input if the user just registered
   if (registeredEmail) {
     const emailInput = signInForm.querySelector('input[name="email"]');
     emailInput.value = registeredEmail;
-
-    // Clear the registered email from local storage after pre-filling
     localStorage.removeItem('registeredEmail');
   }
   loginModal.style.display = 'block';
   registerModal.style.display = 'none';
+  passwordInput.value = '';
+  msgSpanLogin.innerText = '';
   registerBtn.addEventListener('click', function () {
-    showRegisterModal();    
+    showRegisterModal();
   });
   closeButtons();
-
 }
 
-// Function to show register modal and hide login modal
+//show register modal hide login modal
 export async function showRegisterModal() {
   registerModal.style.display = 'block';
   loginModal.style.display = 'none';
+  msgSpanRegister.innerText = '';
   loginBtn.addEventListener('click', function () {
     showLoginModal();
-
+    passwordInput.value = '';
   });
   closeButtons();
-
 }
 
 // Close modal when clicking on the close button
@@ -219,9 +220,16 @@ export async function updateLoginButton() {
     loginButton.innerText = '登出系統';
     loginButton.id = 'logout-btn';
   }
-  const logoutBtn = document.getElementById('logout-btn')
-  logoutBtn.addEventListener('click',()=> {
+  const logoutBtn = document.getElementById('logout-btn');
+  logoutBtn.addEventListener('click', (event) => {
+    event.preventDefault(); 
     localStorage.removeItem('token');
-    location.reload();
-  })
+    hideModals(); // Hide any open modals before reloading
+    setTimeout(() => location.reload(), 100); // Delay reload to ensure modals are hidden
+  });
+}
+
+function hideModals() {
+  loginModal.style.display = 'none';
+  registerModal.style.display = 'none';
 }

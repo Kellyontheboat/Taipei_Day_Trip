@@ -3,8 +3,6 @@ from fastapi.responses import JSONResponse, FileResponse
 from typing import Optional
 from models.attractions import get_db_attrs_with_imgs, get_db_attr_with_imgs, get_db_mrts
 
-#from 
-
 router = APIRouter()
 
 @router.get("/", include_in_schema=False)

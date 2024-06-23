@@ -1,4 +1,3 @@
-import { showLoginModal, updateLoginButton } from './render.js';
 export async function fetchAttractions(page = 0, keyword = null) {
   const size = 12;
   let url = `/api/attractions?page=${page}&size=${size}`;
@@ -83,7 +82,7 @@ export async function registerformSubmission() {
         },
         body: JSON.stringify(data)
       });
-
+      //if BE return ok true
       if (response.ok) {
         registerMessage.innerText = '註冊成功，請登入系統';
         registerMessage.style.color = 'green';
@@ -91,9 +90,8 @@ export async function registerformSubmission() {
         localStorage.setItem('registeredEmail', data.email)
       } else {
         const errorData = await response.json();
-        // if (errorData.detail === "Email已經註冊帳戶") {
-        //   registerMessage.innerText = 'Email已經註冊帳戶';
-        //   registerMessage.style.color = 'red';
+        //key of custom_http_exception_handler: message
+        //if email already exist or ...
         if (errorData.message) {
           registerMessage.innerText = errorData.message;
           registerMessage.style.color = 'red';
@@ -103,7 +101,7 @@ export async function registerformSubmission() {
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred while registering. Please try again.');
+      alert('註冊過程發生錯誤，請再嘗試一次');
     }
   });
 };
@@ -117,11 +115,12 @@ export async function loginformSubmission(){
       event.preventDefault(); // Prevent default form submission
 
       const formData = new FormData(signInForm);
+      // data sent to BE
       const data = {
         email: formData.get('email'),
         password: formData.get('password')
       };
-
+      //call BE api to sent data
       try {
         const response = await fetch('/api/user/auth', {
           method: 'PUT', // Correct method should be PUT for login
@@ -137,8 +136,12 @@ export async function loginformSubmission(){
           location.reload(); 
         } else {
           const errorData = await response.json();
-          msgSpan.innerText = '電子郵件或密碼錯誤';
-          msgSpan.style.color = 'red';
+          console.log(errorData)
+
+          if (errorData.message == 'Incorrect email or password') {
+            msgSpan.innerText = '電子郵件或密碼錯誤'; 
+            msgSpan.style.color = 'red';
+          }
         }
       } catch (error) {
         console.error('Error logging in:', error);
@@ -160,13 +163,12 @@ export async function checkLoginStatus() {
           'Content-Type': 'application/json'
         }
       });
-
       if (!response.ok) {
         console.error('Response status:', response.status, response.statusText);
         throw new Error('Network response was not ok');
       }
-
       const userData = await response.json();
+      console.log(userData);
       return true;
     } catch (error) {
       console.error('Error fetching user data:', error);
