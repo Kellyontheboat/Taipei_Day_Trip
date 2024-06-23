@@ -1,10 +1,22 @@
-import { fetchAttractions, fetchMrtStations, fetchAttr } from './api.js';
-import { renderAttractions, initStationElements, renderAttr } from './render.js';
+import { fetchAttractions, fetchMrtStations, fetchAttr, registerformSubmission, loginformSubmission, checkLoginStatus } from './api.js';
+import { renderAttractions, initStationElements, renderAttr, updateLoginButton } from './render.js'; 
 import { createScrollHandler } from './scroll.js';
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+  // check user sign -in status
+  const status = await checkLoginStatus();
+  if(status) {
+    updateLoginButton();
+  }
+  
   const pathArray = window.location.pathname.split('/');
   const pageType = pathArray[1]; // Determine the endpoint('attraction', '')
+
+  registerformSubmission();
+  loginformSubmission();
+  // if (pathArray[1] === 'user'){
+    
+  // }
 
   if (pageType === 'attraction') {
     // If the path is /attraction/{id}
@@ -12,7 +24,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetchAttr(attractionId).then(data => {
       if (data) {
-        console.log(data)
         renderAttr(data.data);
       }
 
@@ -95,4 +106,5 @@ document.addEventListener("DOMContentLoaded", function () {
     loadMoreAttractions();
     window.addEventListener('scroll', handleScroll);
   }
+  
 });

@@ -36,7 +36,6 @@ body {
   text-decoration: none;
 }
 
-
 .nav-item-container .nav-item {
   font-weight: 500;
   font-size: 16px;
@@ -47,6 +46,141 @@ body {
   align-items: center;
 }
 
+/* ! modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 20;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  margin-top: 80px;
+  padding: 0;
+  width: 340px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  position: relative;
+}
+
+#loginModal .modal-content {
+  min-height: 275px;
+  max-height: 80vh;
+  /* Limit the maximum height to 80% of viewport height */
+  overflow-y: auto;
+  /* Enable vertical scrolling if content exceeds max-height */
+}
+
+#registerModal .modal-content {
+  min-height: 275px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-decorate {
+  width: 100%;
+  height: 10px;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 10px;
+  background: linear-gradient(270deg, #337788 0%, #66AABB 100%);
+  color: white;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.modal-title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  /* Needed for absolute positioning of the close icon */
+  width: 95%;
+
+}
+
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 30px;
+  font-weight: 200;
+  margin-left: 30px;
+  position: absolute;
+  right: 10px;
+  /* Adjust distance from the right edge */
+  top: 50%;
+  /* Center vertically */
+  transform: translateY(-50%);
+  /* Fine-tune vertical centering */
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#login-modal-btn:hover,
+#register-modal-btn:hover,
+#login-register-btn,
+#logout-btn,
+.close:hover,
+button {
+  cursor: pointer;
+}
+
+.modal h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #666666;
+  margin: 20px 0 10px 0;
+  text-align: center;
+}
+
+.form-group {
+  width: 100%;
+  margin-bottom: 10px;
+  /* Add spacing between form groups */
+}
+
+.modal input,
+.modal button {
+  width: 310px;
+  height: 47px;
+  box-sizing: border-box;
+}
+
+.modal input {
+  border: 0.5px solid rgb(216, 216, 214);
+  border-radius: 5px;
+  font-size: 16px;
+  padding-left: 10px;
+}
+
+.modal input:focus {
+  border-color: #3f4040;
+}
+
+.modal button {
+  font-size: 19px;
+}
+
+/* ! navbarWelcome */
 .navbarWelcome {
   display: flex;
   justify-content: center;
@@ -358,8 +492,8 @@ form.order-schedule .form-title {
 .form-item-title {
   font-weight: 700;
   cursor: pointer;
-    margin-right: 5px;
-    vertical-align: middle;
+  margin-right: 5px;
+  vertical-align: middle;
 }
 
 input[type='date'] {

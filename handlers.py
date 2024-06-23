@@ -22,7 +22,8 @@ async def general_exception_handler(request: Request, exc: Exception):
 async def custom_http_exception_handler(request: Request, exc: CustomHTTPException):
     return JSONResponse(
         status_code=exc.status_code,
-        content=exc.detail
+        content={"error": True, "message": exc.detail}
+        #content=exc.detail
     )
 
 def register_exception_handlers(app):

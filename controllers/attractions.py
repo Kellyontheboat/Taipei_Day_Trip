@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse, FileResponse
 from typing import Optional
-from models import get_db_attrs_with_imgs, get_db_attr_with_imgs, get_db_mrts
+from models.attractions import get_db_attrs_with_imgs, get_db_attr_with_imgs, get_db_mrts
 
 router = APIRouter()
 
@@ -50,5 +50,3 @@ async def get_attr(request: Request, attractionId: Optional[int] = None):
 async def get_mrts(request: Request):
     data = get_db_mrts()
     return JSONResponse(status_code=200, content={"data": data})
-
-
