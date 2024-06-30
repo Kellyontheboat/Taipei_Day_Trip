@@ -1,3 +1,5 @@
+import { deleteBooking } from './api.js'
+
 const gridContainerImg = document.querySelector('.grid-container-img');
 const loadingSentinel = document.getElementById("loading-sentinel");
 
@@ -82,6 +84,8 @@ export function renderAttr(attraction) {
 
   const carouselBox = document.querySelector('.carousel-box');
   const indicatorContainer = document.querySelector('.carousel-indicators');
+  const bookingForm = document.querySelector(".order-schedule");
+  const bookingButton = bookingForm.querySelector("button[type='submit']");
 
   function createIndicators(count) {
     indicatorContainer.innerHTML = ''; 
@@ -124,7 +128,25 @@ export function renderAttr(attraction) {
   document.querySelector('.next').addEventListener('click', () => {
     moveSlide(1);
   });
+  
+  const attributes = {
+    'attraction-id': attraction.id,
+    'attraction-name': attraction.name,
+    'attraction-address': attraction.address,
+    'attraction-img': attraction.images[0]
+  };
+
+  localStorage.setItem("bookingData", JSON.stringify(attributes));
 };
+
+//   setAttributes(bookingButton, attributes);
+// };
+
+// function setAttributes(element, attributes) {
+//   for (const key in attributes) {
+//     element.setAttribute(`data-${key}`, attributes[key]);
+//   }
+// }
 
 function moveSlide(direction) {
   const slides = document.querySelectorAll('.slides');
@@ -233,3 +255,154 @@ function hideModals() {
   loginModal.style.display = 'none';
   registerModal.style.display = 'none';
 }
+
+//! booking
+const bookingContainer = document.getElementById('booking-container');
+export function appendNewItem(item) {
+  const bookingContainer = document.getElementById('booking-container');
+
+  const createDiv = (className, textContent = '') => {
+    const div = document.createElement('div');
+    div.className = className;
+    div.textContent = textContent;
+    return div;
+  };
+
+  const createSpanWithPair = (titleClass, titleText, valueClass, valueText) => {
+    const span = document.createElement('span');
+    span.className = 'booking-data-pair';
+
+    const titleDiv = createDiv(titleClass, titleText);
+    const valueDiv = createDiv(valueClass, valueText);
+
+    span.appendChild(titleDiv);
+    span.appendChild(valueDiv);
+
+    return span;
+  };
+
+  const bookingItem = createDiv('booking-item');
+
+  const bookingAttrDetail = createDiv('booking-attr-detail');
+
+  const bookingAttrImg = createDiv('booking-attr-img');
+  const img = document.createElement('img');
+  img.src = item.attraction.image;
+  img.alt = item.attraction.name;
+  bookingAttrImg.appendChild(img);
+
+  const bookingAttrTextWrap = createDiv('booking-attr-text-wrap');
+
+  const attractionName = bookingAttrTextWrap.appendChild(createSpanWithPair('booking-attr-title', '台北一日遊：', 'booking-attr-name', item.attraction.name));
+  attractionName.id = "booking-attr-name"
+
+  bookingAttrTextWrap.appendChild(createSpanWithPair('booking-attr-label', '日期：', 'booking-attr-value', item.date));
+  bookingAttrTextWrap.appendChild(createSpanWithPair('booking-attr-label', '時間：', 'booking-attr-value', item.time));
+  bookingAttrTextWrap.appendChild(createSpanWithPair('booking-attr-label', '費用：', 'booking-attr-value', '新台幣' + item.price + '元'));
+  bookingAttrTextWrap.appendChild(createSpanWithPair('booking-attr-label', '地點：', 'booking-attr-value', item.attraction.address));
+
+  bookingAttrDetail.appendChild(bookingAttrImg);
+  bookingAttrDetail.appendChild(bookingAttrTextWrap);
+
+  const deleteButton = document.createElement('button');
+  deleteButton.textContent = 'Delete';
+  deleteButton.dataset.bookingId = item.id;
+  deleteButton.innerHTML = '<img src="/static/pics/icon_delete.png" alt="Delete">';
+  deleteButton.id = 'booking-delete-btn';
+
+  deleteButton.addEventListener('click', async function () {
+    const bookingId = this.dataset.bookingId;
+    if (bookingId === 'localStorage') {
+      await deleteLocalStorageBooking();
+    } else {
+      await deleteBooking(bookingId);
+    }
+  });
+
+  bookingItem.appendChild(bookingAttrDetail);
+  bookingItem.appendChild(deleteButton);
+  bookingContainer.appendChild(bookingItem);
+}
+
+
+export async function fetchAndRenderItemsFromDB(username) {
+
+  const bookingUsername = document.getElementById('booking-username');
+  bookingUsername.textContent = username;
+
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch('/api/booking', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch booking data');
+    }
+
+    const dataList = await response.json();
+    //[{},{}] List[BookingWrapper]
+    if (dataList.length === 0) {
+      const item = document.createElement('div');
+      item.classList = 'booking-message'
+      item.textContent = '目前沒有任何待預訂的行程';
+      bookingContainer.appendChild(item);
+      return;
+    };
+
+    console.log("fetchAndRenderItemsFromDB", dataList)
+    dataList.forEach(item => appendNewItem(item.data));
+  } catch (error) {
+    console.error('Error fetching booking data:', error);
+    // Handle error as needed (e.g., show error message)
+  }
+}
+
+
+
+// export async function renderBooking(username) {
+//   const bookingUsername = document.getElementById('booking-username');
+//   bookingUsername.textContent = username;
+// }
+
+// document.addEventListener("DOMContentLoaded", async function () {
+//   const { isAuthenticated, user } = await checkLoginStatus();
+//   if (isAuthenticated) {
+//     updateLoginButton();
+//     const username = user.username;
+//     renderBooking(username);
+//   }
+// });
+
+//export function renderBooking(bookingData, username) {
+//   if (bookingData && bookingData.data && username) {
+//     console.log(bookingData)
+//     document.getElementById('booking-date').textContent = bookingData.data.date;
+//     document.getElementById('booking-time').textContent = bookingData.data.time;
+//     document.getElementById('booking-price').textContent = bookingData.data.price;
+//     document.getElementById('booking-address').textContent = bookingData.data.attraction.address;
+//     document.getElementById('booking-username').textContent = username
+//   } else {
+//     console.error("Invalid booking data:", bookingData);
+//   }
+// }
+
+// export function fetchAndRenderItemsFromLocalStorage() {
+//   return new Promise((resolve, reject) => {
+//   const localStorageData = localStorage.getItem('bookingData');
+//     //LS:{"data":{"attraction":{"id":4,"name":"國立故宮博物院","address":"臺北市  士林區至善路二段221號","image":"https://.jpg"},"date":"2024-06-11","time":"afternoon","price":2000}}
+//     if (localStorageData) {
+//       const bookingDataRaw = JSON.parse(localStorageData);
+//       const bookingData = bookingDataRaw.data;
+//       console.log(bookingData);
+//       setTimeout(() => {
+//         appendNewItem(bookingData, true);
+//         resolve();
+//       }, 10);
+//     } else {
+//       resolve(); // Resolve immediately if there is no bookingData in localStorage
+//     }
+//   });
+// };

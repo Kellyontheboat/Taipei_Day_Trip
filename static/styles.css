@@ -135,6 +135,8 @@ body {
   cursor: pointer;
 }
 
+#to-booking-btn,
+#booking-delete-btn,
 #login-modal-btn:hover,
 #register-modal-btn:hover,
 #login-register-btn,
@@ -715,6 +717,87 @@ hr.middle {
   margin: 0;
   margin-bottom: 40px;
   width: 1200px;
+}
+
+/* ! booking */
+#booking-span {
+  margin-top: 40px;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.booking-attr-img img {
+  width: 250px;
+    height: 200px;
+    object-fit: cover;
+  box-sizing: border-box;
+  margin: 0 8px;
+  margin-top: 30px;
+  padding: 0
+}
+
+#booking-wrapper {
+display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  width: 100%;
+}
+
+#booking-container {
+  display: flex;
+  flex-direction: column;
+  width:1000px;
+}
+
+.booking-item {
+  position: relative;
+}
+
+#booking-delete-btn {
+  position: absolute;
+  top: 30px;
+  right: 10px;
+  background-color: white;
+  border: white;
+}
+
+.booking-attr-detail {
+  display: flex;
+  flex-direction: row;
+}
+
+.booking-attr-text-wrap {
+margin-top: 30px;
+margin-left: 30px;
+
+}
+
+#booking-attr-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: #448899;
+  margin-bottom: 25px;
+}
+
+.booking-data-pair {
+  display: flex;
+    flex-direction: row;
+    margin-bottom: 15px;
+    font-size: 16px;
+    
+}
+
+.booking-attr-label {
+  font-weight: 700;
+}
+
+.booking-attr-value {
+  font-weight: 400;
+}
+
+#booking-delete-btn {
+
 }
 
 /* ! max 1200px */

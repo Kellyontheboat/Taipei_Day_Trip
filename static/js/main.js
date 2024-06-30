@@ -1,25 +1,28 @@
-import { fetchAttractions, fetchMrtStations, fetchAttr, registerformSubmission, loginformSubmission, checkLoginStatus } from './api.js';
-import { renderAttractions, initStationElements, renderAttr, updateLoginButton } from './render.js'; 
+import { fetchAttractions, fetchMrtStations, fetchAttr, registerformSubmission, loginformSubmission, checkLoginStatus, bindBookingFormSubmission } from './api.js';
+import { renderAttractions, initStationElements, renderAttr, updateLoginButton, fetchAndRenderItemsFromDB } from './render.js'; 
 import { createScrollHandler } from './scroll.js';
 
 document.addEventListener("DOMContentLoaded", async function () {
   // check user sign -in status
-  const status = await checkLoginStatus();
-  if(status) {
+  const { isAuthenticated, user } = await checkLoginStatus();
+  if (isAuthenticated) {
     updateLoginButton();
   }
+
+  // if (!isAuthenticated) {
+  //   window.location.href = '/';
+  //   return;
+  // }
   
   const pathArray = window.location.pathname.split('/');
   const pageType = pathArray[1]; // Determine the endpoint('attraction', '')
 
   registerformSubmission();
   loginformSubmission();
-  // if (pathArray[1] === 'user'){
-    
-  // }
 
   if (pageType === 'attraction') {
     // If the path is /attraction/{id}
+    // clear the bookingData if the user has entered before login
     const attractionId = pathArray[pathArray.length - 1];
 
     fetchAttr(attractionId).then(data => {
@@ -40,7 +43,25 @@ document.addEventListener("DOMContentLoaded", async function () {
         costDiv.innerText = '新台幣 2500 元';
       }
     }
+      bindBookingFormSubmission();
+
     });
+  }
+
+  
+  
+
+  else if (pageType === 'booking') {
+    
+    const loginStatus = await checkLoginStatus();
+    const { isAuthenticated, user } = loginStatus;
+    if (!isAuthenticated) {
+      window.location.href = '/';
+      return;
+    }
+    // Now user is authenticated
+    const username = user.username;
+    await fetchAndRenderItemsFromDB(username);
 
   } else {
     // If the path is for the homepage
@@ -106,5 +127,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     loadMoreAttractions();
     window.addEventListener('scroll', handleScroll);
   }
+
+  
   
 });
