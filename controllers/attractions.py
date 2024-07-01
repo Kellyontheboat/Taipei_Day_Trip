@@ -16,9 +16,6 @@ async def attraction(request: Request, id: int):
 
 @router.get("/booking", include_in_schema=False)
 async def booking(request: Request):  #, user: dict = Depends(get_current_member)
-    # if not user:
-    #     print ("MMMMMMMRRRRRRR",user)
-    #     return RedirectResponse(url="/")
     return FileResponse("./static/booking.html", media_type="text/html")
 
 @router.get("/thankyou", include_in_schema=False)

@@ -714,9 +714,15 @@ hr.middle {
   border: none;
   background-color: #dedcdc;
   height: 1px;
-  margin: 0;
+  margin: 20px auto;
   margin-bottom: 40px;
   width: 1200px;
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  justify-content: center;
 }
 
 /* ! booking */
@@ -798,6 +804,90 @@ margin-left: 30px;
 
 #booking-delete-btn {
 
+}
+/* !您的聯絡資料 信用卡 */
+.booking-form{
+  width: 1200px;
+  padding: 0 110px;
+}
+.booking-form.contact {
+  box-sizing: border-box;
+  padding: 0 110px;
+}
+
+.booking-form.pay.inside {
+  box-sizing: border-box;
+    padding: 0 110px;
+}
+
+.booking-form-title {
+  text-align: left;
+  width: 980px;
+    margin-bottom: 20px;
+    font-size: 19px;
+    font-weight: 700;
+}
+
+#booking-container
+.form-group label {
+  font-size: 16px;
+    font-weight: 400;
+    
+}
+
+#booking-container
+.form-group {
+  padding-left: 110px;
+}
+
+.booking-form input {
+  width: 200px;
+  height: 38px;
+  box-sizing: border-box;
+  border: 0.5px solid rgb(216, 216, 214);
+    border-radius: 5px;
+    font-size: 16px;
+    padding-left: 10px;
+    margin-bottom: 5px;
+}
+
+.booking-form.pay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cost-pay {
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  margin-left: auto;
+}
+
+.booking-form button {
+  width: 173px;
+  height: 36px;
+  background-color:  #448899;
+  border: none;
+    color: #faf7f7;
+    border-radius: 5px;
+    font-size: 19px;
+}
+
+#booking-contact-message {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.modal input {
+  border: 0.5px solid rgb(216, 216, 214);
+  border-radius: 5px;
+  font-size: 16px;
+  padding-left: 10px;
+}
+
+.modal input:focus {
+  border-color: #3f4040;
 }
 
 /* ! max 1200px */

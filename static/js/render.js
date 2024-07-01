@@ -343,8 +343,9 @@ export async function fetchAndRenderItemsFromDB(username) {
     }
 
     const dataList = await response.json();
-    //[{},{}] List[BookingWrapper]
-    if (dataList.length === 0) {
+    document.getElementById('booking-total-cost').innerText = '總價：新台幣' + dataList.total_cost + '元'
+    //[booking:{},{}, ] List[BookingWrapper]
+    if (dataList.bookings.length === 0) {
       const item = document.createElement('div');
       item.classList = 'booking-message'
       item.textContent = '目前沒有任何待預訂的行程';
@@ -353,7 +354,7 @@ export async function fetchAndRenderItemsFromDB(username) {
     };
 
     console.log("fetchAndRenderItemsFromDB", dataList)
-    dataList.forEach(item => appendNewItem(item.data));
+    dataList.bookings.forEach(item => appendNewItem(item.data));
   } catch (error) {
     console.error('Error fetching booking data:', error);
     // Handle error as needed (e.g., show error message)

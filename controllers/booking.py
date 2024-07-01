@@ -3,7 +3,7 @@ from pydantic import BaseModel, HttpUrl
 from fastapi.responses import JSONResponse
 from models.booking import BookingWrapper
 from models.members import UserLogin, CurrentMember
-from models.booking import BookingWrapper, BookingWrapperWithId, Booking, get_booking_from_db
+from models.booking import BookingWrapper, BookingResponse, Booking, get_booking_from_db
 from exceptions import CustomHTTPException
 from starlette.requests import Request
 
@@ -44,7 +44,7 @@ async def create_booking(booking_data: BookingWrapper, user: dict = Depends(get_
         logging.error(f"Unexpected error: {e}")
         raise HTTPException(status_code=500, detail="An unexpected error occurred")
       
-@router.get("/api/booking", response_model=List[BookingWrapperWithId])
+@router.get("/api/booking", response_model=BookingResponse)
 async def fetch_bookings(user: dict = Depends(get_current_member)):
     try:
         member_id = user.get('id')

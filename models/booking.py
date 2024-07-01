@@ -3,6 +3,7 @@ from models.attractions import get_db_attr_for_booking
 from datetime import datetime
 from database import execute_query
 import logging
+from typing import List
 
 
 class Attraction(BaseModel):
@@ -36,6 +37,10 @@ class Booking(BaseModel):
     time: constr(pattern=r'^(morning|afternoon)$')
     price: PositiveInt
     member_id: PositiveInt
+    
+class BookingResponse(BaseModel):
+    bookings: List[BookingWrapperWithId]
+    total_cost: PositiveInt
     
 
     
@@ -73,6 +78,7 @@ def get_booking_from_db(member_id):
     bookings = execute_query(bookings_query, (member_id,))
     # [{'attraction_id': 6, 'date': datetime.date(2024, 6, 15), 'time': 'afternoon', 'price': 2000}, {'attraction_id': 14, 'date': datetime.date(2024, 6, 17), 'time': 'morning', 'price': 2500}]
     booking_data = []
+    total_cost = 0
     for booking in bookings:
         attraction_id = booking['attraction_id']
         attraction_info = get_db_attr_for_booking(attraction_id)
@@ -85,8 +91,19 @@ def get_booking_from_db(member_id):
                 'price': booking['price'],
             }
         })
-    return booking_data
-    #[{'data': {'attraction': {'id': 6, 'name': '陽明山溫泉區', 'address': '臺北市  北投區竹子湖路1之20號', 'image': 'https://www.travel.taipei/d_upload_ttn/sceneadmin/pic/11000985.jpg'}, 'date': '2024-06-15', 'time': 'afternoon', 'price': 2000}}, {'data': {'attraction': {'id': 14, 'name': '中正紀念堂', 'address': '臺北市  中正區中山南路21號', 'image': 'https://www.travel.taipei/d_upload_ttn/sceneadmin/pic/11000375.jpg'}, 'date': '2024-06-17', 'time': 'morning', 'price': 2500}}]
+        total_cost += booking['price']
+        
+    print ({
+    'bookings': booking_data,
+    'total_cost': total_cost
+    })
+        
+    return {
+        'bookings': booking_data,
+        'total_cost': total_cost
+    }
+# {'bookings': [{'data': {'id': 41, 'attraction': {'id': 3, 'name': '士林官邸', 'address': '臺北市  士林區福林路60號', 'image': 'https://.jpg'}, 'date': '2024-07-18', 'time': 'morning', 'price': 2500}}, {'data': {'id': 40, 'attraction': {'id': 6, 'name': '陽明山溫泉區', 'address': '臺北市  北投區竹子湖路1之20號', 'image': 'https://.jpg'}, 'date': '2024-07-09', 'time': 'afternoon', 'price': 2000}}], 'total_cost': 8500}
+
   
 def delete_booking_from_db(booking_id):
     print("Attempting to delete booking with ID:", booking_id)

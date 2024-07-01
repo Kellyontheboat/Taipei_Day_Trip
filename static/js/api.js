@@ -317,6 +317,26 @@ export function bindBookingFormSubmission() {
 
   bookingButton.addEventListener("click", async (event) => {
     event.preventDefault();
+    const dateInput = document.getElementById('date');
+    const timeInputs = document.querySelectorAll('#time input[type="radio"]');
+
+    if (!dateInput.value) {
+      alert('請選擇日期！');
+      return; // Stop further execution
+    }
+
+    let timeSelected = false;
+    timeInputs.forEach(input => {
+      if (input.checked) {
+        timeSelected = true;
+      }
+    });
+
+    if (!timeSelected) {
+      alert('請選擇時間！');
+      return; // Stop further execution
+    }
+
     await submitBookingForm(event);
   });
 };
