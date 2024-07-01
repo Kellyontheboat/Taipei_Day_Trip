@@ -52,6 +52,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
     // Now user is authenticated
     const username = user.username;
+    localStorage.setItem('username', username);
+    localStorage.setItem('useremail', user.email);
     await fetchAndRenderItemsFromDB(username);
 
   } else {

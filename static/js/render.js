@@ -352,6 +352,12 @@ export async function fetchAndRenderItemsFromDB(username) {
 
     console.log("fetchAndRenderItemsFromDB", dataList)
     dataList.bookings.forEach(item => appendNewItem(item.data));
+    const inputName = localStorage.getItem('username');
+    const inputEmail = localStorage.getItem('useremail');
+    document.getElementById('booking-name').value = inputName;
+    document.getElementById('booking-email').value = inputEmail;
+    localStorage.removeItem('username');
+    localStorage.removeItem('useremail');
   } catch (error) {
     console.error('Error fetching booking data:', error);
     // Handle error as needed (e.g., show error message)
