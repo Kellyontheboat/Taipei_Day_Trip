@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, HttpUrl
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from models.booking import BookingWrapper
 from models.members import UserLogin, CurrentMember
 from models.booking import BookingWrapper, BookingResponse, Booking, get_booking_from_db
@@ -39,7 +40,14 @@ async def create_booking(booking_data: BookingWrapper, user: dict = Depends(get_
 
         return booking_data
     except ValueError as e:
+        logging.error(f"ValueError: {e}")
         raise HTTPException(status_code=422, detail=str(e))
+    except RequestValidationError as e:
+        logging.error(f"RequestValidationError: {e.errors()}")
+        raise HTTPException(status_code=422, detail="Validation error")
+    except CustomHTTPException as e:
+        logging.error(f"CustomHTTPException: {e}")
+        raise e
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
         raise HTTPException(status_code=500, detail="An unexpected error occurred")
@@ -49,7 +57,7 @@ async def fetch_bookings(user: dict = Depends(get_current_member)):
     try:
         member_id = user.get('id')
         return get_booking_from_db(member_id)
-        #[{'data': {'attraction': {'id': 6, 'name': '陽明山溫泉區', 'address': '臺北市  北投區竹子湖路1之20號', 'image': 'https://www.travel.taipei/d_upload_ttn/sceneadmin/pic/11000985.jpg'}, 'date': '2024-06-15', 'time': 'afternoon', 'price': 2000}}, {'data': {'attraction': {'id': 14, 'name': '中正紀念堂', 'address': '臺北市  中正區中山南路21號', 'image': 'https://www.travel.taipei/d_upload_ttn/sceneadmin/pic/11000375.jpg'}, 'date': '2024-06-17', 'time': 'morning', 'price': 2500}}]
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -60,9 +68,3 @@ async def delete_booking(booking_id: int, user: dict = Depends(get_current_membe
         return {"message": "Booking deleted successfully"}
     else:
         raise HTTPException(status_code=500, detail=response["error"])
-
-
-# data=BookingData(attraction=Attraction(id=4, name='國立故宮博物院', address='臺北市  士林區至善路二段221號', image=Url('https://www.travel.taipei/d_upload_ttn/sceneadmin/image/A0/B0/C0/D14/E810/F21/48d66fbd-1ba3-4efd-837a-3767db5f52e0.jpg')), date='2024-06-20', time='afternoon', price=2000)
-# INFO:root:Booking Info: attraction=Attraction(id=4, name='國立故宮博物院', address='臺北市  士林區至善路二段221號', image=Url('https://www.travel.taipei/d_upload_ttn/sceneadmin/image/A0/B0/C0/D14/E810/F21/48d66fbd-1ba3-4efd-837a-3767db5f52e0.jpg')) date='2024-06-20' time='afternoon' price=2000
-# ERROR:root:Unexpected error: 'dict' object has no attribute 'id'
-# INFO:     127.0.0.1:55426 - "POST /api/booking HTTP/1.1" 500 Internal Server Error

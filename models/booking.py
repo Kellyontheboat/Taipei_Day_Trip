@@ -1,5 +1,6 @@
-from pydantic import BaseModel, constr, PositiveInt, validator, HttpUrl
+from pydantic import BaseModel, constr, PositiveInt, validator, HttpUrl, Field
 from models.attractions import get_db_attr_for_booking
+from fastapi import HTTPException
 from datetime import datetime
 from database import execute_query
 import logging
@@ -40,15 +41,9 @@ class Booking(BaseModel):
     
 class BookingResponse(BaseModel):
     bookings: List[BookingWrapperWithId]
-    total_cost: PositiveInt
+    total_cost: int = Field(..., ge=0)
     
-
-    
-#??這個加到購物車的資料應該要用pydantic
 def add_booking_into_db(booking: Booking):
-  
-    logging.info(f"AAAAA {booking}")
-    logging.info(f"Adding booking to DB for member_id={booking.member_id} at attraction_id={booking.attraction_id}")
 
     query = """
     INSERT INTO bookings (attraction_id, date, time, price, member_id, created_at)
@@ -61,13 +56,9 @@ def add_booking_into_db(booking: Booking):
             (booking.attraction_id, booking.date, booking.time, booking.price, booking.member_id, datetime.now()),
             commit=True
         )
-        logging.info("Booking successfully added to the database.")
     except Exception as e:
-        logging.error(f"Failed to add booking to DB: {e}")
-        raise
+        raise HTTPException(status_code=500, detail=f"Failed to add booking to DB: {e}")
       
-#??拿到屬於自己token的data ，所以需要用到出來的資料需要符合BookingData的格式
-#??get_db_attr_with_imgs思考是否要新建立一個是只拿render booking需要的資料
 def get_booking_from_db(member_id):
     bookings_query =  """
       SELECT id, attraction_id, date, time, price 
@@ -104,7 +95,6 @@ def get_booking_from_db(member_id):
     }
 # {'bookings': [{'data': {'id': 41, 'attraction': {'id': 3, 'name': '士林官邸', 'address': '臺北市  士林區福林路60號', 'image': 'https://.jpg'}, 'date': '2024-07-18', 'time': 'morning', 'price': 2500}}, {'data': {'id': 40, 'attraction': {'id': 6, 'name': '陽明山溫泉區', 'address': '臺北市  北投區竹子湖路1之20號', 'image': 'https://.jpg'}, 'date': '2024-07-09', 'time': 'afternoon', 'price': 2000}}], 'total_cost': 8500}
 
-  
 def delete_booking_from_db(booking_id):
     print("Attempting to delete booking with ID:", booking_id)
     delete_query = """
@@ -117,4 +107,4 @@ def delete_booking_from_db(booking_id):
         return {"success": True}
     except Exception as e:
         print("Error deleting booking from DB:", str(e))
-        return {"success": False, "error": str(e)}
+        raise HTTPException(status_code=500, detail=f"Error deleting booking from DB: {str(e)}")

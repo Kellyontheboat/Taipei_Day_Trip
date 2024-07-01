@@ -192,10 +192,9 @@ export async function checkLoginStatus() {
 }
 
 //! booking
-
 //combine the form data and attr data
 export async function submitBookingForm(event) {
-  event.preventDefault(); // Prevent default form submission behavior
+  event.preventDefault(); // Prevent submission
   console.log('submitBookingForm called');
 
   const bookingForm = document.querySelector(".order-schedule");  
@@ -267,50 +266,6 @@ export async function submitBookingForm(event) {
   }
 };
 
-//   localStorage.setItem("bookingData", JSON.stringify(bookingData));
-//   console.log('Booking data set in localStorage:', bookingData);
-//   const bookingResponse = await postBookingData(bookingData, token);
-//   if (bookingResponse) {
-//     console.log('Booking response received:', bookingResponse);
-//     window.location.href = "/booking"; // Redirect to booking page
-//   } else {
-//     console.error("Booking failed");
-//   }
-// }
-
-//??加上如果使用者沒有填寫完資料的情況處理
-// export async function postBookingData() {
-//   const bookingData = JSON.parse(localStorage.getItem('bookingData'));
-//   // const bookingData = {
-//   //   data: bookingDataRaw
-//   // };
-
-//   const token = localStorage.getItem('token')
-//   try {
-//     const response = await fetch("/api/booking", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "Authorization": `Bearer ${token}`
-//       },
-//       body: JSON.stringify(bookingData)
-//     });
-
-//     if (response.ok) {
-//       let data = await response.json();
-//       delete data.member_id; //conform api doc
-//       return data;
-//     } else {
-//       const errorData = await response.json();
-//       console.error("Booking failed", errorData);
-//       throw new Error("Booking failed");
-//     }
-//   } catch (error) {
-//     console.error("Error:", error);
-//     throw error;
-//   }
-// };
-
 export function bindBookingFormSubmission() {
   const bookingForm = document.querySelector(".order-schedule");
   const bookingButton = bookingForm.querySelector("button[type='submit']");
@@ -320,9 +275,16 @@ export function bindBookingFormSubmission() {
     const dateInput = document.getElementById('date');
     const timeInputs = document.querySelectorAll('#time input[type="radio"]');
 
+    const { isAuthenticated } = await checkLoginStatus();
+    if (!isAuthenticated) {
+      showLoginModal();
+      localStorage.removeItem("bookingData");
+      return;
+    }
+
     if (!dateInput.value) {
       alert('請選擇日期！');
-      return; // Stop further execution
+      return; n
     }
 
     let timeSelected = false;
@@ -334,7 +296,7 @@ export function bindBookingFormSubmission() {
 
     if (!timeSelected) {
       alert('請選擇時間！');
-      return; // Stop further execution
+      return;
     }
 
     await submitBookingForm(event);
@@ -371,7 +333,6 @@ export async function deleteBooking(bookingId) {
 
     if (response.ok) {
       console.log('Booking deleted successfully');
-      // Optionally, remove the booking item from the DOM
       const bookingItem = document.querySelector(`[data-booking-id="${bookingId}"]`).closest('.booking-item');
       bookingItem.remove();
     } else {
@@ -381,58 +342,3 @@ export async function deleteBooking(bookingId) {
     console.error('Error:', error);
   }
 }
-
-// export async function deleteLocalStorageBooking() {
-//   localStorage.removeItem('bookingData');
-//   // Optionally, re-render the page to reflect the deletion
-//   window.location.reload();
-// }
-// export async function deleteLocalStorageBooking() {
-//   const newBookingId = localStorage.getItem('newBookingId');
-//   if (newBookingId) {
-//     // Send a request to delete the booking from the database if it has already been added
-//     const response = await fetch(`/api/booking / ${ newBookingId }` , {
-//       method: 'DELETE',
-//       headers: {
-//         'Content-Type': 'application/json'
-//       },
-//       body: JSON.stringify({ id: newBookingId })
-//     });
-
-//     if (response.ok) {
-//       localStorage.removeItem('newBookingId');
-//       // Remove the item from the DOM
-//       document.querySelector(`[data-booking-id="localStorage"]`).closest('.booking-item').remove();
-//     } else {
-//       console.error('Failed to delete booking from database');
-//     }
-//   } else {
-//     console.log("No new booking ID found in localStorage.");
-//   }
-// }
-// export async function postBookingData(bookingData) {
-
-//   try {
-//     const response = await fetch("/api/booking", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         "Authorization": `Bearer ${token}`
-//       },
-//       body: JSON.stringify(bookingData)
-//     });
-
-//     if (response.ok) {
-//       let data = await response.json();
-//       //delete data.member_id; //conform api doc
-//       return data;
-//     } else {
-//       const errorData = await response.json();
-//       console.error("Booking failed", errorData);
-//       throw new Error("Booking failed");
-//     }
-//   } catch (error) {
-//     console.error("Error:", error);
-//     throw error;
-//   }
-// };

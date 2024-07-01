@@ -12,8 +12,11 @@ logger = logging.getLogger(__name__)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
         return JSONResponse(status_code=404, content={"data": None})
+    # else:
+    #     return JSONResponse(status_code=exc.status_code, content={"error": True})
     else:
-        return JSONResponse(status_code=exc.status_code, content={"error": True})
+        logger.error(f"HTTPException: {exc.detail}")
+        return JSONResponse(status_code=exc.status_code, content={"error": True, "detail": exc.detail})
 
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     # Log the validation error details
@@ -29,6 +32,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 async def custom_http_exception_handler(request: Request, exc: CustomHTTPException):
     # if exc.status_code == 401:
     #     return RedirectResponse(url="/")
+    logger.error(f"CustomHTTPException: {exc.detail}")
     return JSONResponse(
         status_code=exc.status_code,
         content={"error": True, "message": exc.detail}

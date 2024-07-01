@@ -259,7 +259,6 @@ function hideModals() {
 //! booking
 const bookingContainer = document.getElementById('booking-container');
 export function appendNewItem(item) {
-  const bookingContainer = document.getElementById('booking-container');
 
   const createDiv = (className, textContent = '') => {
     const div = document.createElement('div');
@@ -312,18 +311,13 @@ export function appendNewItem(item) {
 
   deleteButton.addEventListener('click', async function () {
     const bookingId = this.dataset.bookingId;
-    if (bookingId === 'localStorage') {
-      await deleteLocalStorageBooking();
-    } else {
-      await deleteBooking(bookingId);
-    }
+    await deleteBooking(bookingId);
   });
 
   bookingItem.appendChild(bookingAttrDetail);
   bookingItem.appendChild(deleteButton);
   bookingContainer.appendChild(bookingItem);
 }
-
 
 export async function fetchAndRenderItemsFromDB(username) {
 
@@ -344,12 +338,15 @@ export async function fetchAndRenderItemsFromDB(username) {
 
     const dataList = await response.json();
     document.getElementById('booking-total-cost').innerText = '總價：新台幣' + dataList.total_cost + '元'
-    //[booking:{},{}, ] List[BookingWrapper]
+
     if (dataList.bookings.length === 0) {
       const item = document.createElement('div');
       item.classList = 'booking-message'
       item.textContent = '目前沒有任何待預訂的行程';
-      bookingContainer.appendChild(item);
+      const targetElement = document.getElementById('booking-content')
+      const parentElement = targetElement.parentNode;
+      parentElement.insertBefore(item, targetElement);
+      targetElement.style.display = 'none';
       return;
     };
 
@@ -360,50 +357,3 @@ export async function fetchAndRenderItemsFromDB(username) {
     // Handle error as needed (e.g., show error message)
   }
 }
-
-
-
-// export async function renderBooking(username) {
-//   const bookingUsername = document.getElementById('booking-username');
-//   bookingUsername.textContent = username;
-// }
-
-// document.addEventListener("DOMContentLoaded", async function () {
-//   const { isAuthenticated, user } = await checkLoginStatus();
-//   if (isAuthenticated) {
-//     updateLoginButton();
-//     const username = user.username;
-//     renderBooking(username);
-//   }
-// });
-
-//export function renderBooking(bookingData, username) {
-//   if (bookingData && bookingData.data && username) {
-//     console.log(bookingData)
-//     document.getElementById('booking-date').textContent = bookingData.data.date;
-//     document.getElementById('booking-time').textContent = bookingData.data.time;
-//     document.getElementById('booking-price').textContent = bookingData.data.price;
-//     document.getElementById('booking-address').textContent = bookingData.data.attraction.address;
-//     document.getElementById('booking-username').textContent = username
-//   } else {
-//     console.error("Invalid booking data:", bookingData);
-//   }
-// }
-
-// export function fetchAndRenderItemsFromLocalStorage() {
-//   return new Promise((resolve, reject) => {
-//   const localStorageData = localStorage.getItem('bookingData');
-//     //LS:{"data":{"attraction":{"id":4,"name":"國立故宮博物院","address":"臺北市  士林區至善路二段221號","image":"https://.jpg"},"date":"2024-06-11","time":"afternoon","price":2000}}
-//     if (localStorageData) {
-//       const bookingDataRaw = JSON.parse(localStorageData);
-//       const bookingData = bookingDataRaw.data;
-//       console.log(bookingData);
-//       setTimeout(() => {
-//         appendNewItem(bookingData, true);
-//         resolve();
-//       }, 10);
-//     } else {
-//       resolve(); // Resolve immediately if there is no bookingData in localStorage
-//     }
-//   });
-// };

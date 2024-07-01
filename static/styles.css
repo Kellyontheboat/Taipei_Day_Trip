@@ -725,17 +725,32 @@ fieldset {
   justify-content: center;
 }
 
-/* ! booking */
+/* ! booking  >1200px*/
 #booking-span {
   margin-top: 40px;
   font-size: 19px;
   font-weight: 700;
 }
 
+#booking-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.booking-message {
+  position: relative;
+  left: 0;
+  width: 980px;
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 30px;
+}
+
 .booking-attr-img img {
   width: 250px;
-    height: 200px;
-    object-fit: cover;
+  height: 200px;
+  object-fit: cover;
   box-sizing: border-box;
   margin: 0 8px;
   margin-top: 30px;
@@ -743,17 +758,16 @@ fieldset {
 }
 
 #booking-wrapper {
-display: flex;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  
   width: 100%;
 }
 
 #booking-container {
   display: flex;
   flex-direction: column;
-  width:1000px;
+  width: 1000px;
 }
 
 .booking-item {
@@ -764,7 +778,8 @@ display: flex;
   position: absolute;
   top: 30px;
   right: 10px;
-  background-color: white;
+  background-color: transparent;
+  ;
   border: white;
 }
 
@@ -774,8 +789,8 @@ display: flex;
 }
 
 .booking-attr-text-wrap {
-margin-top: 30px;
-margin-left: 30px;
+  margin-top: 30px;
+  margin-left: 30px;
 
 }
 
@@ -788,10 +803,10 @@ margin-left: 30px;
 
 .booking-data-pair {
   display: flex;
-    flex-direction: row;
-    margin-bottom: 15px;
-    font-size: 16px;
-    
+  flex-direction: row;
+  margin-bottom: 15px;
+  font-size: 16px;
+
 }
 
 .booking-attr-label {
@@ -802,14 +817,17 @@ margin-left: 30px;
   font-weight: 400;
 }
 
-#booking-delete-btn {
-
+.booking-form label {
+  font-weight: 400;
+  font-size: 16px;
 }
+
 /* !您的聯絡資料 信用卡 */
-.booking-form{
+.booking-form {
   width: 1200px;
   padding: 0 110px;
 }
+
 .booking-form.contact {
   box-sizing: border-box;
   padding: 0 110px;
@@ -817,26 +835,24 @@ margin-left: 30px;
 
 .booking-form.pay.inside {
   box-sizing: border-box;
-    padding: 0 110px;
+  padding: 0 110px;
 }
 
 .booking-form-title {
   text-align: left;
   width: 980px;
-    margin-bottom: 20px;
-    font-size: 19px;
-    font-weight: 700;
+  margin-bottom: 20px;
+  font-size: 19px;
+  font-weight: 700;
 }
 
-#booking-container
-.form-group label {
+#booking-container .form-group label {
   font-size: 16px;
-    font-weight: 400;
-    
+  font-weight: 400;
+
 }
 
-#booking-container
-.form-group {
+#booking-container .form-group {
   padding-left: 110px;
 }
 
@@ -845,10 +861,10 @@ margin-left: 30px;
   height: 38px;
   box-sizing: border-box;
   border: 0.5px solid rgb(216, 216, 214);
-    border-radius: 5px;
-    font-size: 16px;
-    padding-left: 10px;
-    margin-bottom: 5px;
+  border-radius: 5px;
+  font-size: 16px;
+  padding-left: 10px;
+  margin-bottom: 5px;
 }
 
 .booking-form.pay {
@@ -867,11 +883,11 @@ margin-left: 30px;
 .booking-form button {
   width: 173px;
   height: 36px;
-  background-color:  #448899;
+  background-color: #448899;
   border: none;
-    color: #faf7f7;
-    border-radius: 5px;
-    font-size: 19px;
+  color: #faf7f7;
+  border-radius: 5px;
+  font-size: 19px;
 }
 
 #booking-contact-message {
@@ -879,15 +895,10 @@ margin-left: 30px;
   font-size: 16px;
 }
 
-.modal input {
-  border: 0.5px solid rgb(216, 216, 214);
-  border-radius: 5px;
+#booking-total-cost {
+  padding-bottom: 25px;
   font-size: 16px;
-  padding-left: 10px;
-}
-
-.modal input:focus {
-  border-color: #3f4040;
+  font-weight: 700;
 }
 
 /* ! max 1200px */
@@ -973,7 +984,47 @@ margin-left: 30px;
   div.lower-part {
     width: 90%;
   }
+
+  /* ! booking 1200px*/
+  #booking-container,
+  #booking-content {
+    width: 90%
+  }
+
+  .booking-attr-detail {
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+
+  .booking-attr-img img {
+
+    margin: 30px 0px 30px 0px;
+  }
+
+  .booking-attr-text-wrap {
+    margin: 0;
+  }
+
+  .booking-form.contact,
+  .booking-form.pay {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+  }
+
+  .booking-form.pay.inside {
+    padding: 0;
+  }
+
+  .booking-form-title {
+    width: 100%
+  }
+
+  hr.booking {
+    width: 100%
+  }
 }
+
 
 /* ! max 600px */
 @media (max-width: 600px) {
@@ -1080,4 +1131,50 @@ margin-left: 30px;
   button.carousel-button {
     margin: 15px;
   }
+
+  /* ! booking 600px*/
+  #booking-container {
+    width: 90vw;
+  }
+
+  hr.middle.booking {
+    width: 90vw;
+  }
+
+  .booking-attr-detail {
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+
+  .booking-attr-img img {
+    width: 100%;
+    height: 200px;
+    margin: 30px 0px 30px 0px;
+  }
+
+  .booking-attr-text-wrap {
+    margin: 0;
+  }
+
+
+  #booking-delete-btn {
+    top: 260px;
+    right: 10px;
+  }
+
+  .booking-form.contact,
+  .booking-form.pay {
+    width: 90vw;
+    box-sizing: border-box;
+    padding: 0;
+  }
+
+  .booking-form-title {
+    width: 100%
+  }
+
+  .booking-form.pay.inside {
+    padding: 0;
+  }
+
 }

@@ -9,11 +9,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     updateLoginButton();
   }
 
-  // if (!isAuthenticated) {
-  //   window.location.href = '/';
-  //   return;
-  // }
-  
   const pathArray = window.location.pathname.split('/');
   const pageType = pathArray[1]; // Determine the endpoint('attraction', '')
 
@@ -22,7 +17,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   if (pageType === 'attraction') {
     // If the path is /attraction/{id}
-    // clear the bookingData if the user has entered before login
     const attractionId = pathArray[pathArray.length - 1];
 
     fetchAttr(attractionId).then(data => {
@@ -47,9 +41,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     });
   }
-
-  
-  
 
   else if (pageType === 'booking') {
     
@@ -127,7 +118,4 @@ document.addEventListener("DOMContentLoaded", async function () {
     loadMoreAttractions();
     window.addEventListener('scroll', handleScroll);
   }
-
-  
-  
 });
