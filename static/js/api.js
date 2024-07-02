@@ -307,6 +307,7 @@ export async function navBookingBtn(isAuthenticated) {
   navBookingBtn.addEventListener('click', () => {
     if (!isAuthenticated) {
       showLoginModal();
+      return;
     }
     window.location.href = '/booking';
     //fetchAndRenderItemsFromDB(username, isAuthenticated);

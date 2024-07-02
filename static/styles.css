@@ -1023,6 +1023,10 @@ fieldset {
   hr.booking {
     width: 100%
   }
+
+  .booking-message {
+    width: 90%;
+  }
 }
 
 
@@ -1134,7 +1138,7 @@ fieldset {
 
   /* ! booking 600px*/
   #booking-container {
-    width: 90vw;
+    width: 90%;
   }
 
   hr.middle.booking {
@@ -1162,9 +1166,21 @@ fieldset {
     right: 10px;
   }
 
-  .booking-form.contact,
+  .booking-form.contact {
+    width: 90%;
+    box-sizing: border-box;
+    padding: 0;
+  }
+
   .booking-form.pay {
-    width: 90vw;
+    width: 90%;
+    box-sizing: border-box;
+    padding: 0;
+  }
+
+
+  .booking-form.pay.inside {
+    width: 100%;
     box-sizing: border-box;
     padding: 0;
   }
@@ -1177,4 +1193,7 @@ fieldset {
     padding: 0;
   }
 
+  .booking-message {
+    width: 90%;
+  }
 }
