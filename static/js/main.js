@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const username = user.username;
     localStorage.setItem('username', username);
     localStorage.setItem('useremail', user.email);
-    await fetchAndRenderItemsFromDB(username);
+    await fetchAndRenderItemsFromDB(username, isAuthenticated);
 
   } else {
     // If the path is for the homepage

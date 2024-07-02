@@ -308,9 +308,8 @@ export async function navBookingBtn(isAuthenticated) {
     if (!isAuthenticated) {
       showLoginModal();
     }
-    const username = user.username
     window.location.href = '/booking';
-    fetchAndRenderItemsFromDB(username, isAuthenticated);
+    //fetchAndRenderItemsFromDB(username, isAuthenticated);
   });
 };
 
