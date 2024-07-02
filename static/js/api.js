@@ -193,7 +193,7 @@ export async function checkLoginStatus() {
 
 //! booking
 //combine the form data and attr data
-export async function submitBookingForm(event) {
+export async function submitBookingForm(event, isAuthenticated) {
   event.preventDefault(); // Prevent submission
   console.log('submitBookingForm called');
 
@@ -208,7 +208,6 @@ export async function submitBookingForm(event) {
 
   const token = localStorage.getItem('token')
 
-  const { isAuthenticated } = await checkLoginStatus();
   if (!isAuthenticated) {
     showLoginModal();
     localStorage.removeItem("bookingData");
@@ -266,7 +265,7 @@ export async function submitBookingForm(event) {
   }
 };
 
-export function bindBookingFormSubmission() {
+export function bindBookingFormSubmission(isAuthenticated) {
   const bookingForm = document.querySelector(".order-schedule");
   const bookingButton = bookingForm.querySelector("button[type='submit']");
 
@@ -275,7 +274,6 @@ export function bindBookingFormSubmission() {
     const dateInput = document.getElementById('date');
     const timeInputs = document.querySelectorAll('#time input[type="radio"]');
 
-    const { isAuthenticated } = await checkLoginStatus();
     if (!isAuthenticated) {
       showLoginModal();
       localStorage.removeItem("bookingData");
@@ -284,7 +282,7 @@ export function bindBookingFormSubmission() {
 
     if (!dateInput.value) {
       alert('請選擇日期！');
-      return; n
+      return;
     }
 
     let timeSelected = false;
@@ -299,14 +297,12 @@ export function bindBookingFormSubmission() {
       return;
     }
 
-    await submitBookingForm(event);
+    await submitBookingForm(event, isAuthenticated);
   });
 };
 
-async function navBookingBtn () {
+export async function navBookingBtn(isAuthenticated) {
   const navBookingBtn = document.getElementById('to-booking-btn');
-  const loginStatus = await checkLoginStatus();
-  const { isAuthenticated, user } = loginStatus;
 
   navBookingBtn.addEventListener('click', () => {
     if (!isAuthenticated) {
@@ -314,11 +310,10 @@ async function navBookingBtn () {
     }
     const username = user.username
     window.location.href = '/booking';
-    fetchAndRenderItemsFromDB(username);
+    fetchAndRenderItemsFromDB(username, isAuthenticated);
   });
 };
 
-navBookingBtn();
 
 export async function deleteBooking(bookingId) {
   const token = localStorage.getItem('token');

@@ -1,4 +1,4 @@
-import { fetchAttractions, fetchMrtStations, fetchAttr, registerformSubmission, loginformSubmission, checkLoginStatus, bindBookingFormSubmission } from './api.js';
+import { fetchAttractions, fetchMrtStations, fetchAttr, registerformSubmission, loginformSubmission, checkLoginStatus, bindBookingFormSubmission, navBookingBtn } from './api.js';
 import { renderAttractions, initStationElements, renderAttr, updateLoginButton, fetchAndRenderItemsFromDB } from './render.js'; 
 import { createScrollHandler } from './scroll.js';
 
@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   if (isAuthenticated) {
     updateLoginButton();
   }
+  navBookingBtn(isAuthenticated);
 
   const pathArray = window.location.pathname.split('/');
   const pageType = pathArray[1]; // Determine the endpoint('attraction', '')
@@ -37,15 +38,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         costDiv.innerText = '新台幣 2500 元';
       }
     }
-      bindBookingFormSubmission();
+      bindBookingFormSubmission(isAuthenticated);
 
     });
   }
 
   else if (pageType === 'booking') {
     
-    const loginStatus = await checkLoginStatus();
-    const { isAuthenticated, user } = loginStatus;
     if (!isAuthenticated) {
       window.location.href = '/';
       return;
