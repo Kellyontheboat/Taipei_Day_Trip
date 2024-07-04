@@ -314,7 +314,6 @@ export async function navBookingBtn(isAuthenticated) {
   });
 };
 
-
 export async function deleteBooking(bookingId) {
   const token = localStorage.getItem('token');
   try {
@@ -337,3 +336,173 @@ export async function deleteBooking(bookingId) {
     console.error('Error:', error);
   }
 }
+
+// !TapPay
+
+export function TapPay() {
+  const fields = {
+    number: {
+      element: '#card-number',
+      placeholder: '**** **** **** ****'
+    },
+    expirationDate: {
+      element: '#card-expiration-date',
+      placeholder: 'MM / YY'
+    },
+    ccv: {
+      element: '#card-ccv',
+      placeholder: 'CVV'
+    }
+  };
+
+  TPDirect.card.setup({
+    fields: fields,
+    styles: {
+      'input': { 'color': 'gray' },
+      'input.ccv': { /* 'font-size': '16px' */ },
+      'input.expiration-date': { /* 'font-size': '16px' */ },
+      'input.card-number': { /* 'font-size': '16px' */ },
+      ':focus': { /* 'color': 'black' */ },
+      '.valid': { 'color': 'green' },
+      '.invalid': { 'color': 'red' },
+      '@media screen and (max-width: 400px)': { 'input': { 'color': 'orange' } }
+    },
+    isMaskCreditCardNumber: true,
+    maskCreditCardNumberRange: { beginIndex: 6, endIndex: 11 }
+  });
+
+  TPDirect.card.onUpdate((update) => {
+    if (update.canGetPrime) {
+      // Enable submit Button to get prime.
+      document.querySelector('#credit-card-submit').removeAttribute('disabled');
+    } else {
+      // Disable submit Button to get prime.
+      document.querySelector('#credit-card-submit').setAttribute('disabled', true);
+    }
+
+    if (update.cardType === 'visa') {
+      console.log('Card type: VISA');
+    }
+
+    // Check if update.status is defined before accessing its properties
+    if (update.status) {
+      if (update.status.number === 2) {
+        console.log('Card number is invalid');
+      } else if (update.status.number === 0) {
+        console.log('Card number is valid');
+      } else {
+        console.log('Card number is normal');
+      }
+
+      if (update.status.expiry === 2) {
+        console.log('Expiration date is invalid');
+      } else if (update.status.expiry === 0) {
+        console.log('Expiration date is valid');
+      } else {
+        console.log('Expiration date is normal');
+      }
+
+      if (update.status.ccv === 2) {
+        console.log('CCV is invalid');
+      } else if (update.status.ccv === 0) {
+        console.log('CCV is valid');
+      } else {
+        console.log('CCV is normal');
+      }
+    }
+  });
+
+  document.getElementById('booking-form').addEventListener('submit', onSubmit);
+
+  function onSubmit(event) {
+    event.preventDefault();
+
+    const tappayStatus = TPDirect.card.getTappayFieldsStatus();
+
+    if (tappayStatus.canGetPrime === false) {
+      alert('Cannot get prime');
+      return;
+    }
+
+    TPDirect.card.getPrime((result) => {
+      if (result.status !== 0) {
+        alert('Get prime error ' + result.msg);
+        return;
+      }
+      alert('Get prime 成功，prime: ' + result.card.prime);
+
+      // Create an order object
+      const order = {
+        price: 1000, // Replace with your actual order price
+        trip: {
+          attraction: {
+            name: "Attraction Name",
+            address: "Attraction Address",
+            image: "https://example.com/attraction.jpg"
+          },
+          date: "2024-07-01",
+          time: "10:00 AM"
+        },
+        contact: {
+          phone: "0987654321",
+          name: "John Doe",
+          email: "johndoe@example.com"
+        }
+      };
+
+      // Send prime and order details to your server
+      fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prime: result.card.prime,
+          order: order
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.payment.status === 0) {
+            alert('Payment succeeded: ' + data.payment.message);
+          } else {
+            alert('Payment failed: ' + data.payment.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Payment error');
+        });
+    });
+  }
+
+  document.querySelector('#credit-card-submit').addEventListener('click', function (event) {
+    TPDirect.card.getPrime(function (result) {
+      document.querySelector('#result').innerHTML = JSON.stringify(result, null, 4);
+
+      var command = `
+        Use following command to send to server \n\n
+        curl -X POST https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime \\
+        -H 'content-type: application/json' \\
+        -H 'x-api-key: partner_Dx4Ckr1tRJB315jIMc8SMnbUPCIs3DkaKLSNFDR8RzNzPPmKVYspsqo4' \\
+        -d '{
+          "partner_key": "partner_Dx4Ckr1tRJB315jIMc8SMnbUPCIs3DkaKLSNFDR8RzNzPPmKVYspsqo4",
+          "prime": "${result.card.prime}",
+          "amount": "1",
+          "merchant_id": "GlobalTesting_CTBC",
+          "details": "Some item",
+          "cardholder": {
+            "phone_number": "+886923456789",
+            "name": "王小明",
+            "email": "LittleMing@Wang.com",
+            "zip_code": "100",
+            "address": "台北市天龍區芝麻街1號1樓",
+            "national_id": "A123456789"
+          }
+        }'`.replace(/                /g, '');
+
+      document.querySelector('#curl').innerHTML = command;
+    });
+  });
+}
+

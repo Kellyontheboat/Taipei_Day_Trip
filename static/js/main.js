@@ -1,4 +1,4 @@
-import { fetchAttractions, fetchMrtStations, fetchAttr, registerformSubmission, loginformSubmission, checkLoginStatus, bindBookingFormSubmission, navBookingBtn } from './api.js';
+import { fetchAttractions, fetchMrtStations, fetchAttr, registerformSubmission, loginformSubmission, checkLoginStatus, bindBookingFormSubmission, navBookingBtn, TapPay } from './api.js';
 import { renderAttractions, initStationElements, renderAttr, updateLoginButton, fetchAndRenderItemsFromDB } from './render.js'; 
 import { createScrollHandler } from './scroll.js';
 
@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     localStorage.setItem('username', username);
     localStorage.setItem('useremail', user.email);
     await fetchAndRenderItemsFromDB(username, isAuthenticated);
+    TapPay();
 
   } else {
     // If the path is for the homepage

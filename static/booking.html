@@ -6,6 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Booking</title>
   <link rel="stylesheet" href="/static/styles.css">
+  <!-- TapPay -->
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.18.0"></script>
+  <script>
+    TPDirect.setupSDK(151824, "app_hXqLobrQZsaAV5dZcdQHPssvzgC0q69Tq8b8yIypjo3VQDu9uNVAl0GtI2gy"
+, 'sandbox')
+  </script>
+
 </head>
 
 <body>
@@ -116,36 +123,56 @@
     </div>
 <hr class="middle  booking">
     <div class="booking-form pay">
-      <!-- 信用卡付款資訊 -->
-      <div class="booking-form pay inside">
-        <div class="booking-form-title">
-          信用卡付款資訊
-        </div>
-        <div class="form-group">
-          <label for="card-number">卡片號碼：</label>
-          <input type="text" id="card-number" name="card-number" placeholder="**** **** **** ****" required>
-        </div>
-        <div class="form-group">
-          <label for="expiry-date">過期時間：</label>
-          <input type="text" id="expiry-date" name="expiry-date" placeholder="MM / YY" required>
-        </div>
-        <div class="form-group">
-          <label for="cvv">驗證密碼：</label>
-          <input type="text" id="cvv" name="cvv" placeholder="CVV" required>
-        </div>
-      </div>
-      
-<hr class="middle booking">
-      <div class="form-group cost-pay">
-        <div id="booking-total-cost">總價：新台幣 2000 元</div>
-        <button type="submit">確認訂購並付款</button>
-        </div>
-      </div>
-      </form>      
+
+      <!-- !信用卡付款資訊 -->
+
+  <div>
+    <label>CardView</label>
+    <div id="tappay-iframe"></div>
+  </div>
+
+  <style>
+    .tpfield {
+      height: 40px;
+      width: 300px;
+      border: 1px solid gray;
+      margin: 5px 0;
+      padding: 5px;
+    }
+  </style>
+  <div class="tpfield" id="card-number"></div>
+  <div class="tpfield" id="card-expiration-date"></div>
+  <div class="tpfield" id="card-ccv"></div>
+
+  <div class="booking-form pay inside">
+    <div class="booking-form-title">
+      信用卡付款資訊
+    </div>
+    <div class="form-group">
+      <label for="card-number">卡片號碼：</label>
+      <input type="text" id="card-number" name="card-number" placeholder="**** **** **** ****" required>
+    </div>
+    <div class="form-group">
+      <label for="expiry-date">過期時間：</label>
+      <input type="text" id="expiry-date" name="expiry-date" placeholder="MM / YY" required>
+    </div>
+    <div class="form-group">
+      <label for="cvv">驗證密碼：</label>
+      <input type="text" id="cvv" name="cvv" placeholder="CVV" required>
+    </div>
+  </div>
+
+  <hr class="middle booking">
+  <div class="form-group cost-pay">
+    <div id="booking-total-cost">總價：新台幣 2000 元</div>
+    <button type="submit" id="credit-card-submit">確認訂購並付款</button>
+  </div>
+</form>
     </div>
   </div>
 
   <script type="module" src="/static/js/main.js"></script>
+  
   <!-- ! Footer -->
   <div class="before-footer"></div>
   <div class="footer">

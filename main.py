@@ -7,6 +7,7 @@ import os
 from controllers.member import router as member_router
 from controllers.attractions import router as attractions_router
 from controllers.booking import router as booking_router
+from controllers.order import router as order_router
 
 
 app = FastAPI()
@@ -14,6 +15,7 @@ app = FastAPI()
 app.include_router(member_router)
 app.include_router(attractions_router)
 app.include_router(booking_router)
+app.include_router(order_router)
 
 # Mount the static directory
 app.mount("/static", StaticFiles(directory="static"), name="static")

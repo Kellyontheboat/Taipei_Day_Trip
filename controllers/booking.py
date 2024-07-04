@@ -1,6 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, HttpUrl
-from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from models.booking import BookingWrapper
 from models.members import UserLogin, CurrentMember
