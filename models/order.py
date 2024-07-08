@@ -1,13 +1,12 @@
 from pydantic import BaseModel, HttpUrl
 from models.redis.r_booking import retrieve_booking_data_redis, store_booking_data_redis
 from models.booking import get_booking_from_db
-from typing import Optional, Literal
-from datetime import datetime
+from typing import Optional
 from database import execute_query
 from enum import Enum
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import HTTPException
 
 #from models.booking import Attraction
 class Attraction(BaseModel):
@@ -89,7 +88,7 @@ def update_order_status_db(update_order: UpdateOrder):
             SET pay_status = %s, rec_trade_id = %s
             WHERE order_number = %s
         """
-        # Execute the query with necessary parameters
+        
         execute_query(query, (update_order.pay_status, update_order.rec_trade_id, update_order.order_number),commit=True)
 
         # Log success message

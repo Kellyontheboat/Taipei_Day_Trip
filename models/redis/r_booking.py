@@ -14,6 +14,16 @@ import logging
 # Add detailed logging
 logging.basicConfig(level=logging.DEBUG)
 
+try:
+    redis_client.ping()
+    print("Connected to Redis")
+except redis.ConnectionError as e:
+    print(f"Connection error: {e}")
+
+redis_client.set('my_key', 'my_value')
+value = redis_client.get('my_key')
+print(value)  # Output: b'my_value'
+
 def store_booking_data_redis(member_id, new_booking):
     """ Store booking data in Redis """
     redis_key = f"member:{member_id}"
