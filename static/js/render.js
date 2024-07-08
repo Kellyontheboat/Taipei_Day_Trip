@@ -350,7 +350,6 @@ export async function fetchAndRenderItemsFromDB(username) {
       return;
     };
 
-    console.log("fetchAndRenderItemsFromDB", dataList)
     dataList.bookings.forEach(item => appendNewItem(item.data));
     const inputName = localStorage.getItem('username');
     const inputEmail = localStorage.getItem('useremail');
@@ -358,6 +357,8 @@ export async function fetchAndRenderItemsFromDB(username) {
     document.getElementById('booking-email').value = inputEmail;
     localStorage.removeItem('username');
     localStorage.removeItem('useremail');
+
+    return dataList.total_cost;
   } catch (error) {
     console.error('Error fetching booking data:', error);
     // Handle error as needed (e.g., show error message)

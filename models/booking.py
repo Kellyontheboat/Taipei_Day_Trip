@@ -43,19 +43,22 @@ class BookingResponse(BaseModel):
     bookings: List[BookingWrapperWithId]
     total_cost: int = Field(..., ge=0)
     
-def add_booking_into_db(booking: Booking):
+def add_booking_into_db(booking: Booking) -> int:
 
     query = """
     INSERT INTO bookings (attraction_id, date, time, price, member_id, created_at)
     VALUES (%s, %s, %s, %s, %s, %s)
     """
     
+    last_insert_id_query = "SELECT LAST_INSERT_ID()"
+    
     try:
-        execute_query(
+        last_insert_id = execute_query(
             query,
             (booking.attraction_id, booking.date, booking.time, booking.price, booking.member_id, datetime.now()),
             commit=True
         )
+        return last_insert_id
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to add booking to DB: {e}")
       
@@ -83,16 +86,14 @@ def get_booking_from_db(member_id):
             }
         })
         total_cost += booking['price']
-        
-    print ({
-    'bookings': booking_data,
-    'total_cost': total_cost
-    })
-        
-    return {
+
+    result = {
         'bookings': booking_data,
         'total_cost': total_cost
     }
+    
+    print(f"get_booking_from_db result: {result}")
+    return result
 # {'bookings': [{'data': {'id': 41, 'attraction': {'id': 3, 'name': '士林官邸', 'address': '臺北市  士林區福林路60號', 'image': 'https://.jpg'}, 'date': '2024-07-18', 'time': 'morning', 'price': 2500}}, {'data': {'id': 40, 'attraction': {'id': 6, 'name': '陽明山溫泉區', 'address': '臺北市  北投區竹子湖路1之20號', 'image': 'https://.jpg'}, 'date': '2024-07-09', 'time': 'afternoon', 'price': 2000}}], 'total_cost': 8500}
 
 def delete_booking_from_db(booking_id):

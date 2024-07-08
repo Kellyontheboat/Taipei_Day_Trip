@@ -833,10 +833,10 @@ fieldset {
   padding: 0 110px;
 }
 
-.booking-form.pay.inside {
+/* .booking-form.pay.inside {
   box-sizing: border-box;
   padding: 0 110px;
-}
+} */
 
 .booking-form-title {
   text-align: left;
@@ -871,6 +871,8 @@ fieldset {
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
+  padding: 0 110px;
 }
 
 .cost-pay {
@@ -901,7 +903,34 @@ fieldset {
   font-weight: 700;
 }
 
-/* ! max 1200px */
+.thankyou-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+#thankyou-result {
+  margin-top: 200px;
+}
+
+#thankyou-result,
+#thankyou-order-title  {
+  font-size: 25px;
+  font-weight: 500;
+}
+
+#thankyou-order-title,
+#order-number {
+  margin-bottom: 40px;
+}
+
+#order-number {
+  font-size: 25px;
+  margin-bottom: 40px;
+}
+
+/* !!!max 1200px!!! */
 @media only screen and (min-width: 601px) and (max-width: 1200px) {
 
   .navbar {
@@ -1017,11 +1046,17 @@ fieldset {
   }
 
   .booking-form-title {
-    width: 100%
+    width: 100%;
   }
 
   hr.booking {
-    width: 100%
+    width: 100%;
+  }
+
+  .payment-hr-parent {
+    width: 90vw;
+    display: flex;
+    justify-content: center;
   }
 
   .booking-message {
@@ -1030,7 +1065,7 @@ fieldset {
 }
 
 
-/* ! max 600px */
+/* ! ! !max 600px ! ! ! */
 @media (max-width: 600px) {
 
   .navbar {
@@ -1145,6 +1180,12 @@ fieldset {
     width: 90vw;
   }
 
+  .payment-hr-parent {
+    width: 90vw;
+    display: flex;
+    justify-content: center;
+  }
+
   .booking-attr-detail {
     flex-direction: column;
     margin-bottom: 20px;
@@ -1196,4 +1237,6 @@ fieldset {
   .booking-message {
     width: 90%;
   }
+
+
 }

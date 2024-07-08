@@ -175,7 +175,7 @@ export async function checkLoginStatus() {
       const userData = await response.json();
       return {
         isAuthenticated: true,
-        user: userData.data
+        user: userData.data //id, username, email
       };
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -324,7 +324,7 @@ export async function deleteBooking(bookingId) {
         'Content-Type': 'application/json'
       }
     });
-
+    
     if (response.ok) {
       console.log('Booking deleted successfully');
       const bookingItem = document.querySelector(`[data-booking-id="${bookingId}"]`).closest('.booking-item');
@@ -339,7 +339,7 @@ export async function deleteBooking(bookingId) {
 
 // !TapPay
 
-export function TapPay() {
+export function TapPay(user) { //user: id, username, email
   const fields = {
     number: {
       element: '#card-number',
@@ -429,28 +429,21 @@ export function TapPay() {
         alert('Get prime error ' + result.msg);
         return;
       }
-      alert('Get prime 成功，prime: ' + result.card.prime);
+      //alert('Get prime 成功，prime: ' + result.card.prime);
 
-      // Create an order object
-      const order = {
-        price: 1000, // Replace with your actual order price
-        trip: {
-          attraction: {
-            name: "Attraction Name",
-            address: "Attraction Address",
-            image: "https://example.com/attraction.jpg"
-          },
-          date: "2024-07-01",
-          time: "10:00 AM"
-        },
-        contact: {
-          phone: "0987654321",
-          name: "John Doe",
-          email: "johndoe@example.com"
-        }
-      };
+      const orderForm = document.getElementById('booking-form')
+      const orderData = new FormData(orderForm);
+      const orderName = orderData.get("name");
+      const orderEmail = orderData.get("email");
+      const orderPhone = orderData.get("tel");
 
-      // Send prime and order details to your server
+      const contact = {
+          phone: orderPhone,
+          name: orderName,
+          email: orderEmail
+        };
+      
+      // Send prime and order details to my server
       fetch('/api/orders', {
         method: 'POST',
         headers: {
@@ -458,13 +451,18 @@ export function TapPay() {
         },
         body: JSON.stringify({
           prime: result.card.prime,
-          order: order
+          contact: contact,
+          memberId: user.id,
         })
       })
         .then(response => response.json())
         .then(data => {
+          console.log("Response data:", data);
+          
           if (data.payment.status === 0) {
             alert('Payment succeeded: ' + data.payment.message);
+            const orderNumber = data.number;
+            window.location.href = `/thankyou?number=${orderNumber}`;
           } else {
             alert('Payment failed: ' + data.payment.message);
           }
@@ -476,33 +474,5 @@ export function TapPay() {
     });
   }
 
-  document.querySelector('#credit-card-submit').addEventListener('click', function (event) {
-    TPDirect.card.getPrime(function (result) {
-      document.querySelector('#result').innerHTML = JSON.stringify(result, null, 4);
-
-      var command = `
-        Use following command to send to server \n\n
-        curl -X POST https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime \\
-        -H 'content-type: application/json' \\
-        -H 'x-api-key: partner_Dx4Ckr1tRJB315jIMc8SMnbUPCIs3DkaKLSNFDR8RzNzPPmKVYspsqo4' \\
-        -d '{
-          "partner_key": "partner_Dx4Ckr1tRJB315jIMc8SMnbUPCIs3DkaKLSNFDR8RzNzPPmKVYspsqo4",
-          "prime": "${result.card.prime}",
-          "amount": "1",
-          "merchant_id": "GlobalTesting_CTBC",
-          "details": "Some item",
-          "cardholder": {
-            "phone_number": "+886923456789",
-            "name": "王小明",
-            "email": "LittleMing@Wang.com",
-            "zip_code": "100",
-            "address": "台北市天龍區芝麻街1號1樓",
-            "national_id": "A123456789"
-          }
-        }'`.replace(/                /g, '');
-
-      document.querySelector('#curl').innerHTML = command;
-    });
-  });
 }
 
