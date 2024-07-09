@@ -62,10 +62,11 @@ def retrieve_booking_data_redis(member_id):
     
     bookings_json = redis_client.get(redis_key) #redis result is a byte string $b'{"bookings": [], "total_cost": 0}'
     
-    # Decode the byte string to a regular string
-    bookings_json = bookings_json.decode('utf-8')
+    print(f'retrieve_booking_data_redis ${bookings_json}')
+    # Decode the byte string to a regular string/no need
+    #bookings_json = bookings_json.decode('utf-8')
     
-    # Parse the JSON string to a dictionary
+    #Parse the JSON string to a dictionary
     booking_data = json.loads(bookings_json)
 
     # Check if the bookings are empty
@@ -87,8 +88,7 @@ def retrieve_booking_data_redis(member_id):
 
     # store data into container
     bookings = booking_data['bookings']
-    # if isinstance(bookings, list) and len(bookings) > 0 and isinstance(bookings[0], list):
-    #     bookings = bookings[0]
+
     for booking in bookings: #[{}.{}.{}...]
         formatted_data['bookings'].append({
             'data': {
@@ -106,7 +106,7 @@ def retrieve_booking_data_redis(member_id):
     return formatted_data
 
 def delete_booking_data_redis(member_id, booking_id):
-    """ Delete booking data from Redis """
+
     redis_key = f"member:{member_id}"
     try:
         if not redis_client.exists(redis_key):

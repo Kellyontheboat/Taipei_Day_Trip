@@ -1,7 +1,7 @@
 from pydantic import BaseModel, HttpUrl
 from models.redis.r_booking import retrieve_booking_data_redis, store_booking_data_redis, delete_booking_data_redis
 from models.booking import get_booking_from_db
-from typing import Optional
+from typing import Optional, List
 from database import execute_query
 from enum import Enum
 import logging
@@ -80,7 +80,6 @@ def save_order_into_db(order_data: OrderData):
         order_id_query = "SELECT id FROM orders WHERE order_number = %s"
         result = execute_query(order_id_query,(order_data.order_number,))
         order_id = result[0]['id']
-        print(f'AAAAA${order_id}')
         return True, order_id
         
     except Exception as e:

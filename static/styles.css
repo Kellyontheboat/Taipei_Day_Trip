@@ -875,7 +875,7 @@ fieldset {
   padding: 0 110px;
 }
 
-.cost-pay {
+.form-group.cost-pay {
   display: flex;
   align-items: flex-end;
   flex-direction: column;
