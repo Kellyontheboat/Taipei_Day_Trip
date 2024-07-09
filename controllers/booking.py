@@ -52,10 +52,10 @@ async def create_booking(booking_data: BookingWrapper, user: dict = Depends(get_
                 'price': booking_info.price
             }
         }
-        print(user)
+
         member_id = user.get('id')
         store_booking_data_redis(member_id, booking_redis)
-        print(f"post /api/booking{booking_data}")
+
         return booking_data
     except ValueError as e:
         logging.error(f"ValueError: {e}")
@@ -72,13 +72,10 @@ async def create_booking(booking_data: BookingWrapper, user: dict = Depends(get_
       
 @router.get("/api/booking", response_model=BookingResponse)
 async def fetch_bookings(user: dict = Depends(get_current_member)):
-    #print (user)
     try:
         member_id = user.get('id')
             
-        print(member_id)
         bookings_from_redis = retrieve_booking_data_redis(member_id)
-        print(f'retrieve_booking_data_redis${bookings_from_redis}')
 
         if bookings_from_redis:
             return bookings_from_redis

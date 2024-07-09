@@ -11,9 +11,9 @@ redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
 
 import logging
 
-# Add detailed logging
 logging.basicConfig(level=logging.DEBUG)
 
+# test redis connection
 try:
     redis_client.ping()
     print("Connected to Redis")
@@ -52,39 +52,22 @@ def store_booking_data_redis(member_id, new_booking):
     }
 
     redis_client.set(redis_key, json.dumps(updated_data))
-    # if existing_data:
-    #     existing_data = json.loads(existing_data)
-    #     bookings = existing_data.get('bookings', [])
-    #     total_cost = existing_data.get('total_cost', 0)
-    # else:
-    #     bookings = []
-    #     total_cost = 0
     
-    # Append the new booking
-    
-
 def retrieve_booking_data_redis(member_id):
     """ Retrieve booking data from Redis """
     redis_key = f"member:{member_id}"
     # Check if the key exists in Redis
-    #print(redis_key)
     if not redis_client.exists(redis_key):
         return None
     
     bookings_json = redis_client.get(redis_key) #redis result is a byte string $b'{"bookings": [], "total_cost": 0}'
-    
-    print(f'retrieve_booking_data_redis bookings_json${bookings_json}')
     
     # Decode the byte string to a regular string
     bookings_json = bookings_json.decode('utf-8')
     
     # Parse the JSON string to a dictionary
     booking_data = json.loads(bookings_json)
-    # # Handle case when booking_data is a list
-    # if isinstance(booking_data, list):
-    #     booking_data = {'bookings': booking_data, 'total_cost': sum(item['data']['price'] for item in booking_data)}
-        
-    print(f'retrieve_booking_data_redis booking_data${booking_data}')
+
     # Check if the bookings are empty
     if not booking_data['bookings']:
         return {
@@ -133,10 +116,16 @@ def delete_booking_data_redis(member_id, booking_id):
         booking_data = redis_client.get(redis_key)
         if booking_data:
             booking_data = json.loads(booking_data)
-            # Filter out the booking to be deleted
-            updated_bookings = [booking for booking in booking_data['bookings'] if booking['data']['id'] != booking_id]
             
-            total_cost = sum(booking['data']['price'] for booking in updated_bookings)
+            if booking_id is None:
+                # If booking_id is None, clear all bookings for the member
+                updated_bookings = []
+                total_cost = 0
+                
+            else:
+                # Filter out the booking to be deleted
+                updated_bookings = [booking for booking in booking_data['bookings'] if booking['data']['id'] != booking_id]
+                total_cost = sum(booking['data']['price'] for booking in updated_bookings)
             
             # Create the updated data structure
             updated_data = {
@@ -146,11 +135,16 @@ def delete_booking_data_redis(member_id, booking_id):
             
             redis_client.set(redis_key, json.dumps(updated_data))
             
-            print(f"Booking with ID {booking_id} deleted successfully from Redis.")
+            if booking_id is None:
+                print(f"All bookings deleted successfully from Redis for member ID {member_id}.")
+            else:
+                print(f"Booking with ID {booking_id} deleted successfully from Redis.")
+            
             return {"success": True}
         else:
             print(f"No booking data found in Redis for member ID {member_id}.")
-            return {"success": False, "message": "No booking data found in Redis."}
+            return {"success": False, "message": f"No booking data found in Redis for member ID {member_id}."}
+    
     except Exception as e:
         print(f"Error deleting booking from Redis: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error deleting booking from Redis: {str(e)}")

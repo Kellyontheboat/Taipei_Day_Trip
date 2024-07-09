@@ -49,9 +49,7 @@ def add_booking_into_db(booking: Booking) -> int:
     INSERT INTO bookings (attraction_id, date, time, price, member_id, created_at)
     VALUES (%s, %s, %s, %s, %s, %s)
     """
-    
-    last_insert_id_query = "SELECT LAST_INSERT_ID()"
-    
+        
     try:
         last_insert_id = execute_query(
             query,

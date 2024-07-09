@@ -258,6 +258,7 @@ function hideModals() {
 
 //! booking
 const bookingContainer = document.getElementById('booking-container');
+const totalCost = document.getElementById('booking-total-cost')
 export function appendNewItem(item) {
 
   const createDiv = (className, textContent = '') => {
@@ -309,8 +310,34 @@ export function appendNewItem(item) {
   deleteButton.innerHTML = '<img src="/static/pics/icon_delete.png" alt="Delete">';
   deleteButton.id = 'booking-delete-btn';
 
-  deleteButton.addEventListener('click', async function () {
+  deleteButton.addEventListener('click', async function (event) {
     const bookingId = this.dataset.bookingId;
+    // Find the parent .booking-item
+    const bookingItem = event.target.closest('.booking-item');
+
+    // get .booking-attr-value whose label "費用："
+    const bookingPairs = bookingItem.querySelectorAll('span.booking-data-pair');
+    console.log(bookingPairs)
+
+    let priceText = '';
+    bookingPairs.forEach(pair => {
+      const labelElement = pair.querySelector('.booking-attr-label');
+      if (labelElement) {
+        const label = labelElement.innerText ? labelElement.innerText.trim() : '';
+      if (label === '費用：') {
+        priceText = pair.querySelector('.booking-attr-value').innerText.trim();
+      }
+    }
+  });
+    
+    const numericValue = parseInt(priceText.match(/\d+/)[0]);
+    console.log(numericValue)
+    
+    const preTotalText = totalCost.textContent.trim();
+    const preTotal = parseInt(preTotalText.match(/\d+/)[0]);
+    console.log(preTotal)
+    totalCost.innerText = `總價：新台幣${preTotal - numericValue}元`;
+
     await deleteBooking(bookingId);
   });
 
@@ -337,7 +364,8 @@ export async function fetchAndRenderItemsFromDB(username) {
     }
 
     const dataList = await response.json();
-    document.getElementById('booking-total-cost').innerText = '總價：新台幣' + dataList.total_cost + '元'
+    
+    totalCost.innerText = '總價：新台幣' + dataList.total_cost + '元'
 
     if (dataList.bookings.length === 0) {
       const item = document.createElement('div');
