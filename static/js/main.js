@@ -1,4 +1,4 @@
-import { fetchAttractions, fetchMrtStations, fetchAttr, registerformSubmission, loginformSubmission, checkLoginStatus, bindBookingFormSubmission, navBookingBtn } from './api.js';
+import { fetchAttractions, fetchMrtStations, fetchAttr, registerformSubmission, loginformSubmission, checkLoginStatus, bindBookingFormSubmission, navBookingBtn, TapPay } from './api.js';
 import { renderAttractions, initStationElements, renderAttr, updateLoginButton, fetchAndRenderItemsFromDB } from './render.js'; 
 import { createScrollHandler } from './scroll.js';
 
@@ -54,6 +54,23 @@ document.addEventListener("DOMContentLoaded", async function () {
     localStorage.setItem('username', username);
     localStorage.setItem('useremail', user.email);
     await fetchAndRenderItemsFromDB(username, isAuthenticated);
+    TapPay(user);
+
+  } 
+  else if (pageType === 'thankyou'){
+    if (!isAuthenticated) {
+      window.location.href = '/';
+      return;
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderNumber = urlParams.get('number');
+    //??之後加上查無此訂單編號
+    if (orderNumber) {
+      document.getElementById("order-number").textContent = orderNumber;
+      return;
+    }
+
+    document.getElementById("order-number").textContent = '前往訂單中心，建置中'
 
   } else {
     // If the path is for the homepage

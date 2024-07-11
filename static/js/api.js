@@ -175,7 +175,7 @@ export async function checkLoginStatus() {
       const userData = await response.json();
       return {
         isAuthenticated: true,
-        user: userData.data
+        user: userData.data //id, username, email
       };
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -314,7 +314,6 @@ export async function navBookingBtn(isAuthenticated) {
   });
 };
 
-
 export async function deleteBooking(bookingId) {
   const token = localStorage.getItem('token');
   try {
@@ -325,7 +324,7 @@ export async function deleteBooking(bookingId) {
         'Content-Type': 'application/json'
       }
     });
-
+    
     if (response.ok) {
       console.log('Booking deleted successfully');
       const bookingItem = document.querySelector(`[data-booking-id="${bookingId}"]`).closest('.booking-item');
@@ -337,3 +336,143 @@ export async function deleteBooking(bookingId) {
     console.error('Error:', error);
   }
 }
+
+// !TapPay
+
+export function TapPay(user) { //user: id, username, email
+  const fields = {
+    number: {
+      element: '#card-number',
+      placeholder: '**** **** **** ****'
+    },
+    expirationDate: {
+      element: '#card-expiration-date',
+      placeholder: 'MM / YY'
+    },
+    ccv: {
+      element: '#card-ccv',
+      placeholder: 'CVV'
+    }
+  };
+
+  TPDirect.card.setup({
+    fields: fields,
+    styles: {
+      'input': { 'color': 'gray' },
+      'input.ccv': { /* 'font-size': '16px' */ },
+      'input.expiration-date': { /* 'font-size': '16px' */ },
+      'input.card-number': { /* 'font-size': '16px' */ },
+      ':focus': { /* 'color': 'black' */ },
+      '.valid': { 'color': 'green' },
+      '.invalid': { 'color': 'red' },
+      '@media screen and (max-width: 400px)': { 'input': { 'color': 'orange' } }
+    },
+    isMaskCreditCardNumber: true,
+    maskCreditCardNumberRange: { beginIndex: 6, endIndex: 11 }
+  });
+
+  TPDirect.card.onUpdate((update) => {
+    if (update.canGetPrime) {
+      // Enable submit Button to get prime.
+      document.querySelector('#credit-card-submit').removeAttribute('disabled');
+    } else {
+      // Disable submit Button to get prime.
+      document.querySelector('#credit-card-submit').setAttribute('disabled', true);
+    }
+
+    if (update.cardType === 'visa') {
+      console.log('Card type: VISA');
+    }
+
+    // Check if update.status is defined before accessing its properties
+    if (update.status) {
+      if (update.status.number === 2) {
+        console.log('Card number is invalid');
+      } else if (update.status.number === 0) {
+        console.log('Card number is valid');
+      } else {
+        console.log('Card number is normal');
+      }
+
+      if (update.status.expiry === 2) {
+        console.log('Expiration date is invalid');
+      } else if (update.status.expiry === 0) {
+        console.log('Expiration date is valid');
+      } else {
+        console.log('Expiration date is normal');
+      }
+
+      if (update.status.ccv === 2) {
+        console.log('CCV is invalid');
+      } else if (update.status.ccv === 0) {
+        console.log('CCV is valid');
+      } else {
+        console.log('CCV is normal');
+      }
+    }
+  });
+
+  document.getElementById('booking-form').addEventListener('submit', onSubmit);
+
+  function onSubmit(event) {
+    event.preventDefault();
+
+    const tappayStatus = TPDirect.card.getTappayFieldsStatus();
+
+    if (tappayStatus.canGetPrime === false) {
+      alert('Cannot get prime');
+      return;
+    }
+
+    TPDirect.card.getPrime((result) => {
+      if (result.status !== 0) {
+        alert('Get prime error ' + result.msg);
+        return;
+      }
+      //alert('Get prime 成功，prime: ' + result.card.prime);
+
+      const orderForm = document.getElementById('booking-form')
+      const orderData = new FormData(orderForm);
+      const orderName = orderData.get("name");
+      const orderEmail = orderData.get("email");
+      const orderPhone = orderData.get("tel");
+
+      const contact = {
+          phone: orderPhone,
+          name: orderName,
+          email: orderEmail
+        };
+      
+      // Send prime and order details to my server
+      fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prime: result.card.prime,
+          contact: contact,
+          memberId: user.id,
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log("Response data:", data);
+          
+          if (data.payment.status === 0) {
+            alert('Payment succeeded: ' + data.payment.message);
+            const orderNumber = data.number;
+            window.location.href = `/thankyou?number=${orderNumber}`;
+          } else {
+            alert('Payment failed: ' + data.payment.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Payment error');
+        });
+    });
+  }
+
+}
+
