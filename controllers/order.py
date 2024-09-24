@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import RedirectResponse
 from models.order import OrderResponse, OrderRequest, PaymentResponse, OrderData, UpdateOrder, save_order_into_db, update_order_status_db, save_booking_into_order_schedule_db, delete_booking_data_db
-from models.redis.r_booking import retrieve_booking_data_redis, delete_booking_data_redis
+from models.booking import get_booking_from_db
 
 from datetime import datetime
 import requests
@@ -27,7 +27,7 @@ def create_order(order_request: OrderRequest):
     
     order_number = generate_order_number()
     pay_status = 'UNPAID'
-    total_cost = retrieve_booking_data_redis(member_id)['total_cost']   
+    total_cost = get_booking_from_db(member_id)['total_cost']   
 
     order_data = OrderData(
         member_id=member_id,
@@ -71,7 +71,6 @@ def create_order(order_request: OrderRequest):
                                     headers=headers)
     
     tappay_result = tappay_response.json()
-    print(tappay_result)
     rec_trade_id = tappay_result.get('rec_trade_id')
     
     update_order = UpdateOrder(
@@ -85,7 +84,6 @@ def create_order(order_request: OrderRequest):
         update_order_status_db(update_order)
         save_booking_into_order_schedule_db(member_id, order_id)
         delete_booking_data_db(member_id)
-        delete_booking_data_redis(member_id, None)
         raise HTTPException(status_code=400, detail=tappay_result["msg"])
     
     # Payment succeeded
@@ -93,7 +91,6 @@ def create_order(order_request: OrderRequest):
     update_order_status_db(update_order)
     save_booking_into_order_schedule_db(member_id, order_id)
     delete_booking_data_db(member_id)
-    delete_booking_data_redis(member_id, None)
 
     payment_response = PaymentResponse(status=tappay_result["status"], message="付款成功")
     order_response = OrderResponse(number=order_number, payment=payment_response)

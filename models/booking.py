@@ -44,7 +44,7 @@ class BookingResponse(BaseModel):
     total_cost: int = Field(..., ge=0)
     
 def add_booking_into_db(booking: Booking) -> int:
-
+    print("add_booking_into_db")
     query = """
     INSERT INTO bookings (attraction_id, date, time, price, member_id, created_at)
     VALUES (%s, %s, %s, %s, %s, %s)
@@ -56,10 +56,10 @@ def add_booking_into_db(booking: Booking) -> int:
             (booking.attraction_id, booking.date, booking.time, booking.price, booking.member_id, datetime.now()),
             commit=True
         )
-        return last_insert_id
+        return {"success": True, "last_insert_id": last_insert_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to add booking to DB: {e}")
-      
+
 def get_booking_from_db(member_id):
     bookings_query =  """
       SELECT id, attraction_id, date, time, price 

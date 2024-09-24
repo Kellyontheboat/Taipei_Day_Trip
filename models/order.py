@@ -1,5 +1,4 @@
 from pydantic import BaseModel, HttpUrl
-from models.redis.r_booking import retrieve_booking_data_redis, store_booking_data_redis, delete_booking_data_redis
 from models.booking import get_booking_from_db
 from typing import Optional, List
 from database import execute_query
@@ -106,8 +105,8 @@ def update_order_status_db(update_order: UpdateOrder):
 
 def save_booking_into_order_schedule_db(member_id: int, order_id: int):
     try:
-        # Fetch booking data from Redis
-        booking_data = retrieve_booking_data_redis(member_id)
+        # Fetch booking data from DB
+        booking_data = get_booking_from_db(member_id)
         print(f'save_booking_into_order_schedule_db ${booking_data}')
         bookings = booking_data['bookings']
 
